@@ -10,6 +10,7 @@ pub fn main() void {
 
         3 => std.debug.print("It's Wednesday.\n", .{}),
 
-        //else => std.debug.print("It's some other day.\n", .{}),
+        // Comment this line to break things
+        else => std.debug.print("It's some other day.\n", .{}),
     }
 }

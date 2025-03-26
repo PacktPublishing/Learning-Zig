@@ -1,17 +1,21 @@
 const std = @import("std");
 
-fn allocateResource(allocator: *std.mem.Allocator) !*u8 {
-    const buffer = try allocator.alloc(u8, 1024);
-    errdefer allocator.free(buffer);
-
-    performOperation(buffer) catch |err| {
-        return err;
-    };
-
-    return buffer;
+pub fn main() !void {
+    try doSomethingThatMightFail();
+    std.debug.print("Success!\n", .{});
 }
 
-fn performOperation(_: []u8) !void {
-    // Perform some operation with the buffer.
-    return void;
+fn doSomethingThatMightFail() !void {
+    // Imagine this is some resource acquisition
+    std.debug.print("Resource acquired\n", .{});
+
+    // This will run only if an error occurs after this point
+    errdefer std.debug.print("Cleaning up resource\n", .{});
+
+    // Simulate a potential error
+    if (std.crypto.random.boolean()) {
+        return error.Oops;
+    }
+
+    std.debug.print("Operation completed\n", .{});
 }
