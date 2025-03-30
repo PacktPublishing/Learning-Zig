@@ -180,7 +180,7 @@ As you've probably noticed, the `std` package keeps popping up in our code snipp
 
 ### Why not "simply" rewrite in Rust?
 
-[image2](assets/rewrite-in-rust.jpeg)
+![image2](assets/rewrite-in-rust.jpeg)
 
 In context of critical or legacy software, rewriting it from scratch often leads to strategic pitfalls that can seriously impact a project's success. Imagine a scenario where a development team decides to start over instead of iterating on their existing codebase. This decision could lead to significant delays, giving competitors the opportunity to gain an edge while the team is tied up in redevelopment.
 
