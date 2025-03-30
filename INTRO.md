@@ -38,7 +38,7 @@ Okay, here is the next part of the text in Markdown:
 
 ### The genesis of Zig: fixing what's broken
 
-![image1](assets/sad-andrew.png)
+<img src="assets/sad-andrew.png" width="250" height="250">
 
 Fed up with the endless landmines that C and C++ scatter across your path, Andrew Kelly decided enough was enough. So, he set out on a mission to create Zig-a language that doesn't force you to choose between modern safety features and the low-level control that system programmers live for. Zig wasn't born out of some academic exercise or a desire to reinvent the wheel; it was forged out of sheer necessity, designed to fix the gaping holes left by its predecessors. In other words, it was born from his deep frustration with the shortcomings of C and C++, especially their undefined behavior, lack of safety guarantees, and the headaches of maintaining large codebases. As Kelly himself put it, "/ have faith that we can do better." 
 
@@ -80,7 +80,7 @@ Let's look at our first Zig snippet to see how this language blends the familiar
 const std = @import("std");
 
 pub fn main() void {
-    std.debug.print("Hello, World!\n", .{});
+    std.debug.print("Hello, World!\n",.{});
 }
 ```
 
@@ -180,7 +180,7 @@ As you've probably noticed, the `std` package keeps popping up in our code snipp
 
 ### Why not "simply" rewrite in Rust?
 
-![image2](assets/rewrite-in-rust.jpeg)
+<img src="assets/rewrite-in-rust.jpeg" width="250" height="250">
 
 In context of critical or legacy software, rewriting it from scratch often leads to strategic pitfalls that can seriously impact a project's success. Imagine a scenario where a development team decides to start over instead of iterating on their existing codebase. This decision could lead to significant delays, giving competitors the opportunity to gain an edge while the team is tied up in redevelopment.
 
@@ -212,8 +212,11 @@ Building from source is a breeze in Zig, making it easy to integrate into develo
 Each of these modes gives you the flexibility to adapt to your project's specific needs, ensuring that you're always using the right tool for the job. We'll delve deeper into each of these release modes in Chapter 11, Packing, where you'll learn how to make the most out of Zig's build system.
 
 
-![image3](assets/javacup.png)
+
 Zig might not be running on 3 billion devices like some other languages that go well with coffee, but when it comes to truly "build once, run anywhere," Zig delivers on that promise without a caffeine boost.
+
+<img src="assets/javacup.png" width="250" height="250">
+
 
 ### Language comparisons
 
@@ -230,7 +233,7 @@ Safety is often touted as the ultimate buzzword in the latest wave of programmin
 
 In case of doubt, create a sign and keep it near you with the words 'Memory safety is one pillar of software correctness' on it.
 
-![image4](assets/just-on-pillar.png)
+<img src="assets/just-on-pillar.png" width="250" height="250">
 
 Alright, let's talk about Zig and why it's like the safety helmet C wishes it had. You see, in C, you can create a struct and just forget to initialize half the fields. No big deal, right? Just a ticking time bomb waiting to blow up your code. But in Zig? Nah, Zig doesn't play that game. Every field gets initialized, or the compiler smacks you upside the head. No mystery bugs creeping in because you forgot something. It's like having your own personal safety inspector-except this one doesn't miss a thing.
 
