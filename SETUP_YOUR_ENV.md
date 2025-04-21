@@ -18,58 +18,60 @@ So, you've decided to give Zig a whirl. Smart move. Now, if you're anything like
 
 ### Playing it safe or living on the edge: Your first Zig dilemma
 
-I have a question for you: do you go with the stable, tagged release or take a walk on the wild side with the nightly build? Let's be real - Zig hasn't hit v1.0 yet, and its release cycle is tied to LLVM's rather leisurely six-month pace. That means official Zig releases can feel like they're arriving by snail mail, and by the time they do, they might be a bit stale compared to the cutting-edge changes happening daily. Sure, you can dip your toes in the Zig pool with a tagged release, and that's fine if you're just testing the waters. But if you decide that Zig is your new best friend and want to really dig in, do yourself a favor and switch to a nightly build. Why? Because that's where the real action is, and it'll save you a lot of head-scratching when you try to follow tutorials or ask for help. The Zig community and resources like zig.guide are all keeping up with the master branch, not the fossilized versions.
+I have a question for you: do you go with the stable, tagged release or take a walk on the wild side with the nightly build? Let's be real - Zig hasn't hit v1.0 yet, and its release cycle is tied to LLVM's rather leisurely six-month pace. That means official Zig releases can feel like they're arriving by snail mail, and by the time they do, they might be a bit stale compared to the cutting-edge changes happening daily. Sure, you can dip your toes in the Zig pool with a tagged release, and that's fine if you're just testing the waters. But if you decide that Zig is your new best friend and want to really dig in, do yourself a favor and switch to a nightly build. Why? Because that's where the real action is, and it'll save you a lot of head-scratching when you try to follow tutorials or ask for help. The Zig community and resources like [zig.guide](https://zig.guide/) keep up with the master branch, not the fossilized versions.
 
 Confused? Let's play a quick game called: Stable or Bold.
 
 ### Stable or Bold
 
-1.  **Question:** Is your project already in production or soon to be?
-2.  **Yes:** Stable Release is recommended. You want the reliability and support of a thoroughly tested version.
-3.  **No:** Move to the next question.
+**Question:** Is your project already in production or soon to be?
 
-4.  **Question:** Are you comfortable with potential bugs or breaking changes?
-5.  **Yes:** Nightly Build is recommended. You'll get access to the latest features and updates.
-6.  **No:** Move to the next question.
+- **Yes:** Stable Release is recommended. You want the reliability and support of a thoroughly tested version.
+- **No:** Move to the next question.
 
-7.  **Question:** Do you rely on tutorials, community resources, or third-party libraries? 
-8.  **Yes:** Nightly Build is recommended. Most resources and active community discussions are aligned with the latest master branch.
-9.  **No:** Move to the next question.
+**Question:** Are you comfortable with potential bugs or breaking changes?
+- **Yes:** Nightly Build is recommended. You'll get access to the latest features and updates.
+- **No:** Move to the next question.
 
-10. **Question:** Is compatibility with external tools or systems critical for your work? 
-11. **Yes:** Stable Release is recommended. This version ensures better compatibility and integration with other tools.
-12. **No:** Move to the next question.
+**Question:** Do you rely on tutorials, community resources, or third-party libraries? 
+- **Yes:** Nightly Build is recommended. Most resources and active community discussions are aligned with the latest master branch.
+- **No:** Move to the next question.
 
-13. **Question:** Are you okay with frequently updating your environment? 
-14. **Yes:** Nightly Build is recommended. It keeps you up to date with the latest changes, though it may require more frequent updates.
-15. **No:** Move to the next question.
+**Question:** Is compatibility with external tools or systems critical for your work? 
+- **Yes:** Stable Release is recommended. This version ensures better compatibility and integration with other tools.
+- **No:** Move to the next question.
 
-16. **Question:** Do you prefer a "set it and forget it" approach to your development environment? 
-17. **Yes:** Stable Release is recommended. This version offers a more hands-off experience, with less frequent updates.
-18. **No:** Consider your other priorities.
+**Question:** Are you okay with frequently updating your environment? 
+- **Yes:** Nightly Build is recommended. It keeps you up to date with the latest changes, though it may require more frequent updates.
+- **No:** Move to the next question.
 
-19. **Question:** Are you experimenting with new features or testing edge cases? 
-20. **Yes:** Nightly Build is recommended. It's ideal for experimentation with the latest enhancements and fixes.
-21. **No:** Move to the next question.
+**Question:** Do you prefer a "set it and forget it" approach to your development environment? 
+- **Yes:** Stable Release is recommended. This version offers a more hands-off experience, with less frequent updates.
+- **No:** Consider your other priorities.
 
-22. **Question:** Are you looking to contribute to Zig or stay closely aligned with the language's development? 
-23. **Yes:** Nightly Build is recommended. Contributing to Zig is best done on the cutting edge.
-24. **No:** Stable Release is recommended. It's more suitable for non-experimental, stable use.
+**Question:** Are you experimenting with new features or testing edge cases? 
+- **Yes:** Nightly Build is recommended. It's ideal for experimentation with the latest enhancements and fixes.
+- **No:** Move to the next question.
+
+**Question:** Are you looking to contribute to Zig or stay closely aligned with the language's development? 
+- **Yes:** Nightly Build is recommended. Contributing to Zig is best done on the cutting edge.
+- **No:** Stable Release is recommended. It's more suitable for non-experimental, stable use.
 
 **Final Decision:** 
 
-* If you've mostly answered "Yes" to stability, compatibility, and less frequent updates → Choose the Stable Release.
-* If you've mostly answered "Yes" to wanting the latest features, being comfortable with frequent updates, and staying aligned with the master branch → Choose the Nightly Build.
+If you've mostly answered "Yes" to stability, compatibility, and less frequent updates → **Choose the Stable Release**.
 
-The silver lining? Zig makes it ridiculously easy to switch between versions - or even run multiple versions side by side. Each release is a self-contained bundle that you can plop anywhere on your system. No mess, no fuss, just pure flexibility. Let's explore how to make it happen with the three main OSs: Linux, Windows and MacOS.
+If you've mostly answered "Yes" to wanting the latest features, being comfortable with frequent updates, and staying aligned with the master branch → **Choose the Nightly Build**.
+
+The silver lining? Zig makes it ridiculously easy to switch between versions or even run multiple versions side by side. Each release is a self-contained bundle that you can plop anywhere on your system. There is no mess, no fuss, just pure flexibility. Let's explore how to make it happen with the three main OSs: Linux, Windows, and macOS.
 
 ### Linux: The land of choices 
 
-If you're running Linux, you're probably no stranger to making choices - and sometimes, too many. For the sake of convenience, let's start with the easy option: your distribution's package manager. Most major Linux distros package the latest release of Zig, so why not give your fingertips a rest and install it the easy way?  And if you're curious about all the package managers that have Zig available, you can find the complete list at this link (https://github.com/ziqlang/zig/wiki/Install-Zig-from-a-Package-Manager).
+If you're running Linux, you're probably no stranger to making choices (and sometimes, too many). For the sake of convenience, let's start with the easy option: your distribution's package manager. Most major Linux distros package the latest release of Zig, so why not give your fingertips a rest and install it the easy way?  And if you're curious about all the package managers with Zig available, you can find the complete list at this [link] (https://github.com/ziqlang/zig/wiki/Install-Zig-from-a-Package-Manager).
 
 But let's say you're the type who enjoys a bit more control, perhaps even a tinge of masochism. In that case, you can install Zig manually.
 
-First, you'll need to download a prebuilt version of Zig. The binaries are conveniently located on the Zig download page (https://ziqlang.org/download/#release-master). The "master" in the URL refers to the master branch, which contains the latest nightly builds. However, if you're looking for a specific version of Zig, such as 0.13.0, you can easily switch to that by using a URL like this one - https://ziglang.org/download/#release-0.13.0.
+First, you'll need to download a prebuilt version of Zig. The binaries are conveniently located on the Zig download page (https://ziqlang.org/download/#release-master). The "master" in the URL refers to the master branch, which contains the latest nightly builds. However, if you're looking for a specific version of Zig, such as 0.14.0, you can easily switch to that by using a URL like this one - https://ziglang.org/download/#release-0.14.0.
 
 Before you download, make sure you grab the right build for your CPU architecture. If you're not sure whether your machine is x86_64, arm64, or something else equally mysterious, you can find out by running: 
 
@@ -80,7 +82,7 @@ uname -m
 Once you know your architecture, you can use `wget` to download the Zig binary directly to your machine. For example, if you're grabbing the master branch build for x86_64, you would run: 
 
 ```bash
-wget [https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz](https://www.google.com/search?q=https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.13.0.tar.xz)
+wget [https://ziglang.org/download/0.13.0/zig-linux-x86_64-0.14.0.tar.xz](https://www.google.com/search?q=https://ziglang.org/download/0.14.0/zig-linux-x86_64-0.13.0.tar.xz)
 ```
 
 After the download completes, extract the archive with:
@@ -92,18 +94,17 @@ tar xf zig-linux-x86_64-0.13.0.tar.xz
 Now, unless you want to be typing out the full path to your Zig binary every time (and trust me, you don't), you'll need to add Zig to your PATH:
 
 ```bash
-echo 'export PATH="$HOME/zig-linux-x86_64-0.12.0:$PATH"' >> ~/.bashrc
+echo 'export PATH="$HOME/zig-linux-x86_64-0.14.0:$PATH"' >> ~/.bashrc
 ```
 
-And there you have it - Zig on Linux, served just the way you like it.
+And there you have it! Zig on Linux is served just the way you like it.
 
-#### Other shells 
-
-This command works perfectly if you're using Bash, which is the default shell for many Linux distributions. However, if you're using a different shell, such as Zsh, Fish, or something more exotic, you'll need to tweak that command slightly.
+> [!NOTE] 
+> This command works perfectly if you're using Bash, which is the default shell for many Linux distributions. However, if you're using a different shell, such as Zsh, Fish, or something more exotic, you'll need to tweak that command slightly.
 
 ### Windows: The land of path variables and PowerShell 
 
-Windows users, rejoice! You have options too. Zig can be installed via one of the many package managers available for Windows: Chocolatey, Scoop, or Winget. Each of these comes with their own quirks, but any will get the job done: 
+Windows users, rejoice! You have options too. Zig can be installed via one of the many package managers available for Windows: Chocolatey, Scoop, or Winget. Each of these comes with its own quirks, but any will get the job done: 
 
 ```powershell
 choco install zig
@@ -121,7 +122,7 @@ Or:
 scoop install zig
 ```
 
-But if you're the type who likes to take the road less traveled (or just enjoy unnecessary complexity), you can manually download Zig. Once again, be sure to choose the right build for your CPU architecture. Most Windows systems will be x86_64, which Microsoft in their infinite wisdom also calls AMD64. To check, just run: 
+But if you're the type who likes to take the road less traveled (or just enjoy unnecessary complexity), you can manually download Zig. Once again, be sure to choose the right build for your CPU architecture. Most Windows systems will be x86_64, which Microsoft, in their infinite wisdom, also calls AMD64. To check, just run: 
 
 ```powershell
 $Env:PROCESSOR_ARCHITECTURE
@@ -147,11 +148,11 @@ Or, if you'd rather keep things local to your user:
 ) 
 ```
 
-Remember to replace `C:\path\to\zig-windows-x86_64-0.13.0` with the actual path where you extracted Zig. And yes, you need to do this step; otherwise, you'll be cursing your machine (with the full path to zig binary) every time you try to compile something.
+Remember to replace `C:\path\to\zig-windows-x86_64-0.14.0` with the actual path where you extracted Zig. And yes, you need to do this step; otherwise, you'll be cursing your machine (with the full path to zig binary) every time you try to compile something.
 
 ### Mac: The cult of brew 
 
-Ah, macOS - where everything just works... until it doesn't. Luckily, getting Zig here is straightforward if you're part of the Homebrew cult. Just run: 
+Ah, macOS, where everything just works... until it doesn't. Luckily, getting Zig here is straightforward if you're part of the Homebrew cult. Just run: 
 
 ```bash
 brew install zig
@@ -170,12 +171,12 @@ zig version
 If everything goes well, you should see something like: 
 
 ```
-0.12.0
+0.14.0
 ```
 
-### BTW I use Arch-Nix
+### BTW I use ~~Arch~~Nix
 
-If you're already rocking Nix, you're probably no stranger to doing things in style. Nix has been gaining more and more adopters over the years, turning what was once a niche, hipster approach into something a bit more mainstream - though it still carries that cool, "I was into this before it was popular" vibe.
+If you're already rocking Nix, you're probably no stranger to doing things in style. Nix has been gaining more and more adopters over the years, turning what was once a niche, hipster approach into something a bit more mainstream, though it still carries that cool, "I was into this before it was popular" vibe.
 
 With Nix already installed on your system, installing Zig is as simple as: 
 
@@ -210,7 +211,16 @@ Now that you've got the source code, it's time to build ZLS. And guess what? Zig
 zig build -Doptimize=ReleaseSafe
 ```
 
-This command compiles ZLS in release mode, optimized for safety and efficiency. Before you know it, you'll have a shiny new ZLS binary ready to go. With ZLS built and ready, it's time to integrate it into your coding workflow.
+If you choose the path of a stable release, the ZLs should match the Zig version installed. If you have, for example, Zig 0.14.0, you should go with the ZLS 0.14.0. The easiest way to do it is to `git checkout` the proper tag before building:
+
+```bash
+git checkout 0.14.0 && zig build -Doptimize=ReleaseSafe
+```
+
+Whatever the path you choose, the command compiles ZLS in release mode and is optimized for safety and efficiency. Before you know it, you'll have a shiny new ZLS binary ready to go. With ZLS built and ready, it's time to integrate it into your coding workflow.
+
+> [!WARNING]
+> Don't forget to put the ZLS binary in your `PATH` to make it accessible without using the full path.
 
 ### Integrating ZLS 
 
