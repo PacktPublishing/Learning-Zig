@@ -224,15 +224,22 @@ Whatever the path you choose, the command compiles ZLS in release mode and is op
 
 ### Integrating ZLS 
 
-Good news! No matter what code editor you prefer, chances are it's fully equipped to handle Zig syntax highlighting and has solid support for integrating with the ZLS. From the sleek interfaces of modern IDEs to the minimalist charm of terminal-based editors, you've got plenty of options. While there are tons of editors ready to make your Zig coding experience smooth and efficient, we're going to focus on two popular choices that cater to distinctly different types of developers: VSCode and Neovim. VSCode is a go-to for those who prefer a somewhat polished, feature-rich environment, packed with extensions and an arguably intuitive GUI. On the other hand, Neovim is favored by developers who appreciate a lean, highly customizable, and keyboard-centric workflow. If you're using a different editor, don't worry! Many other editors also support Zig and ZLS, and you can find detailed instructions in the official Zig documentation. So, no matter what your preference, you're covered. Let's dive into how you can set up VSCode and Neovim for the ultimate Zig development experience.
+Good news! No matter what code editor you prefer, chances are it's fully equipped to handle Zig syntax highlighting and has solid support for integrating with the ZLS. From the sleek interfaces of modern IDEs to the minimalist charm of terminal-based editors, you've got plenty of options. While there are tons of editors ready to make your Zig coding experience smooth and efficient, we're going to focus on two popular choices that cater to distinctly different types of developers: VSCode and Neovim. 
 
+VSCode is a go-to for those who prefer a somewhat polished, feature-rich environment, packed with extensions and an arguably intuitive GUI. On the other hand, 
 
-[image2](assets/vscode.png)
-*Figure 2.1 - VSCode with the LSP information available.*
+Neovim is favored by developers who appreciate a lean, highly customizable, and keyboard-centric workflow. 
+
+If you're using a different editor, don't worry! Many other editors also support Zig and ZLS, and you can find detailed instructions in the official Zig documentation. So, no matter what your preference, you're covered. 
+
+Let's dive into how you can set up VSCode and Neovim for the ultimate Zig development experience.
 
 #### Using ZLS in VSCode 
 
-Getting ZLS up and running in VSCode is about as straightforward as it gets. All you need to do is install the official Zig Language extension (https://marketplace.visualstudio.com/items?itemName=ziglang.vscode-zig), and you're good to go. This extension provides full support for ZLS, giving you all the benefits of intelligent code completions, go-to-definition, and more.
+Getting ZLS up and running in VSCode is about as straightforward as it gets. All you need to do is install the [official Zig Language extension](https://marketplace.visualstudio.com/items?itemName=ziglang.vscode-zig), and you're good to go. This extension provides full support for ZLS, giving you all the benefits of intelligent code completions, go-to-definition, and more.
+
+<img src="assets/vscode.png">
+*Figure 2.1 - VSCode with the LSP information available.*
 
 Here's how to set it up:
 
@@ -241,21 +248,22 @@ Here's how to set it up:
 3.  Install the extension with a single click.
 4.  Restart VSCode, and you're all set.
 
-Once installed, the extension takes care of everything else, integrating seamlessly with ZLS. Whether you're writing code, debugging, or navigating your project, you'll find the experience smooth and efficient. No fuss, no headaches - just pure Zig coding bliss.
+Once installed, the extension takes care of everything else, integrating seamlessly with ZLS. Whether you're writing code, debugging, or navigating your project, you'll find the experience smooth and efficient. No fuss, no headaches, just pure Zig coding bliss.
 
 #### Using ZLS in Neovim 
 
 If you're a Neovim user, chances are you appreciate the finer things in life - like minimalism, efficiency, and the joy of configuring your editor exactly the way you want it. Setting up ZLS in Neovim takes a bit more effort than in VSCode, but the payoff is a highly customized and streamlined Zig development environment.
 
-**Mason** 
-> if you're using the Zig master branch, do not install ZLS via the Mason package manager. Mason only installs the latest tagged release of ZLS, which might not be compatible with Zig master. Instead, follow the manual installation steps below to ensure everything works seamlessly.
 
-For this setup, we'll use the `nvim-lspconfig` plugin along with some specific configurations for ZLS. This guide assumes you're already familiar with setting up other features like keybindings and autocompletion. If not, refer to the `nvim-lspconfig` documentation (https://github.com/neovim/nvim-lspconfig) for more details.
+> [!WARNING]
+> **Mason**: if you're using the Zig master branch, **do not install ZLS via the Mason package manager**. Mason only installs the latest tagged release of ZLS, which might not be compatible with Zig master. Instead, follow the manual installation steps below to ensure everything works seamlessly.
+
+For this setup, we'll use the `nvim-lspconfig` plugin along with some specific configurations for ZLS. This guide assumes you're already familiar with setting up other features like keybindings and autocompletion. If not, refer to the `nvim-lspconfig` [documentation](https://github.com/neovim/nvim-lspconfig) for more details.
 
 Here's how to get ZLS up and running: 
 
 1.  **Install the `vim-plug` plugin manager:**
-    If you haven't already, you'll need to set up `vim-plug` to manage your Neovim plugins.
+    If you haven't already, you must set up `vim-plug` to manage your Neovim plugins.
 
 2.  **Configure Your `init.lua` with `vim-plug`:** 
 
@@ -301,7 +309,7 @@ By default, `zig.vim` might have format-on-save enabled. This setup disables it 
 > Make sure to specify the paths to both `zls` and `zig` if they aren't already in your system's PATH. This ensures that Neovim/Vim can correctly find and use these tools.
 
 **Why `zig.vim` specifically?** 
-And here's a little bragging point: the Zig Vim plugin you're using gets contributions from none other than Andrew Kelley, the creator of Zig himself. While he doesn't maintain it full-time, his occasional contributions ensure that `zig.vim` stays aligned with the language's evolving features. When the person who designed the language collaborates on the plugin, you can trust that it's a solid choice for your Zig development setup. So, when you're coding in Neovim, you're not just using any plugin - you're using one that's been touched by the hands that built Zig.
+And here's a little bragging point: the Zig Vim plugin you're using gets contributions from no other than Andrew Kelley, the creator of Zig. While he doesn't maintain it full-time, his occasional contributions ensure that `zig.vim` stays aligned with the language's evolving features. When the person who designed the language collaborates on the plugin, you can trust that it's a solid choice for your Zig development setup. So, when you're coding in Neovim, you're not just using any plugin, you're using one that's been touched by the hands that built Zig.
 
 ### Fine-tuning ZLS 
 
@@ -352,58 +360,8 @@ The `zls.json` file is where you can really tailor ZLS to fit your workflow. Wan
 
 ### Taking ZLS to the next level 
 
-So you've got ZLS set up and humming along nicely, catching your errors as you code. But what if I told you it could get even better?  That's right, we're about to supercharge your setup by adding a custom build step that will make sure no error slips through the cracks.
+So you've got ZLS set up and humming along nicely, catching your errors as you code. But what if I told you it could get even better? That's right, by following [this official ZLS guide](https://zigtools.org/zls/guides/build-on-save/), we're about to supercharge your setup by adding a custom build step that will make sure no error slips through the cracks.
 
-Once you've located your ZLS configuration file, open it up and add these lines: 
-
-```json
-{
-    "enable_build_on_save": true,
-    "build_on_save_step": "check"
-}
-```
-
-These settings instruct ZLS to run a build every time you save your file. But here's where the real magic happens - the `check` step. This isn't just any build step; it's a custom step we're about to define in your `build.zig` file. Trust me, this will take your error-catching game to a whole new level.
-
-#### Defining a custom `check` step in your `build.zig` 
-
-Now that ZLS is primed to build on save, it's time to define what that build process actually does. We're going to add a custom step to your `build.zig` file that focuses on checking for compile-time errors without the overhead of generating a final binary. This way, you can catch issues fast and fix them even faster.
-
-Let's say your `build.zig` file currently defines an executable like this: 
-
-```zig
-const exe = b.addExecutable(.{
-   .name = "your_magical_executable",
-   .root_source_file = b.path("src/main.zig"),
-   .target = target,
-   .optimize = optimize,
-});
-b.installArtifact(exe); 
-```
-
-To introduce the custom `check` step, you'll want to duplicate this definition with a slight twist: 
-
-```zig
-const exe_check = b.addExecutable(.{
-   .name = "your_magical_executable_check", // Different name maybe?
-   .root_source_file = b.path("src/main.zig"),
-   .target = target,
-   .optimize = optimize,
-}); 
-
-const check = b.step("check", "Check if your_executable compiles"); 
-check.dependOn(&exe_check.step); 
-```
-
-Notice we didn't include `b.installArtifact` in this version. That's intentional - it focuses purely on verifying your code compiles without going through the entire build process. This approach means you can quickly identify and fix compile-time issues, staying in your coding flow without unnecessary delays.
-
-#### Activating your configuration 
-
-With your custom `check` step in place, the final step is to restart your editor or ZLS. Now, whenever you save your files, ZLS will automatically run the build process and surface any errors directly in your editor. It's like having an instant diagnostic tool that ensures your code is always in top shape.
-
-At this point, you might be thinking, "Do I really need this?" The answer is a resounding yes. While ZLS is already powerful, it's not perfect - especially when it comes to complex compile-time expressions. Without this custom build-on-save setup, you might miss errors that don't show up until later in your workflow, potentially causing bigger headaches down the line. By configuring ZLS to run a build process on save, you're catching those tricky errors right when they happen, keeping your development process smooth and frustration-free. It's about working smarter, not harder - and ensuring that your coding experience with Zig is as efficient and enjoyable as possible. So, go ahead, activate that custom check, and watch your Zig workflow transform into a well-oiled machine.
-
-You've decked out ZLS with custom build-on-save diagnostics, and sure, you're probably feeling pretty accomplished. But let's be real - you haven't even started coding yet. All this configuration is just the warm-up, the appetizer before the main course. What if I told you that everything up until now has just been setting the stage for what Zig is truly capable of?  That's right. We've been tinkering with the tools, but now it's time to get down to the real business: actually writing some code.
 
 ## Zig setup - surprise test! 
 
