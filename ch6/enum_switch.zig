@@ -10,7 +10,7 @@ const Day = enum {
     Sunday,
 };
 
-pub fn main() !void {
+pub fn main() void {
     const day = Day.Friday;
     const message = switch (day) {
         Day.Monday => "Ugh, back to work.",

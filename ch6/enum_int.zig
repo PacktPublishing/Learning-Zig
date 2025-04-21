@@ -10,8 +10,8 @@ const Day = enum {
     Sunday,
 };
 
-pub fn main() !void {
+pub fn main() void {
     const today = Day.Wednesday;
-    const dayNumber = @intFromEnum(today);
+    const dayNumber: i32 = @intFromEnum(today);
     std.debug.print("It's day number {d} of the week.\n", .{dayNumber});
 }

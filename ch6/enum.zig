@@ -10,7 +10,7 @@ const Day = enum {
     Sunday,
 };
 
-pub fn main() !void {
+pub fn main() void {
     const today = Day.Wednesday;
     if (today == Day.Wednesday) {
         std.debug.print("Guess what? It's hump day!\n", .{});

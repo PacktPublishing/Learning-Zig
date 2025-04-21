@@ -11,7 +11,7 @@ const TrafficLight = enum {
     }
 };
 
-pub fn main() !void {
+pub fn main() void {
     const light = TrafficLight.Red;
     if (light.isSafeToGo()) {
         std.debug.print("Go ahead.\n", .{});

@@ -6,7 +6,7 @@ const ErrorCode = enum(u16) {
     _,
 };
 
-pub fn main() !void {
+pub fn main() void {
     const code: ErrorCode = .Success;
     switch (code) {
         .Success => std.debug.print("Operation succeeded.\n", .{}),

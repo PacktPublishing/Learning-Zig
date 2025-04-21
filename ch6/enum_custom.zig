@@ -6,7 +6,7 @@ const HttpStatus = enum(i32) {
 
 const std = @import("std");
 
-pub fn main() !void {
+pub fn main() void {
     const status = HttpStatus.NotFound;
     const code = @intFromEnum(status);
     std.debug.print("HTTP Status Code: {d}\n", .{code});
