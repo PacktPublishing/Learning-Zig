@@ -1,7 +1,7 @@
 const std = @import("std");
 
 // Export the function for C compatibility, C calling convention
-export fn count_words(str: [*:0]const u8) callconv(.C) u32 {
+export fn count_words(str: [*:0]const u8) callconv(.c) u32 {
     var count: u32 = 0;
     var in_word: bool = false;
     var i: usize = 0;

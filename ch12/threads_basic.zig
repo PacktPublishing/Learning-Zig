@@ -5,7 +5,7 @@ fn screamIntoTheVoid(steps: u8) void {
     while (i < steps) : (i += 1) {
         std.debug.print("A", .{});
         // Short sleep to keep example snappy
-        std.time.sleep(10 * std.time.ns_per_ms);
+        std.Thread.sleep(10 * std.time.ns_per_ms);
     }
     std.debug.print("!\n", .{});
 }

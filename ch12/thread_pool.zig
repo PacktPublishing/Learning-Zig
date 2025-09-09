@@ -3,7 +3,7 @@ const std = @import("std");
 fn worker(slot: usize, task_id: usize) void {
     std.debug.print("Worker slot {d} executing task {d}\n", .{ slot, task_id });
     // Simulate some work
-    std.time.sleep(10 * std.time.ns_per_ms);
+    std.Thread.sleep(10 * std.time.ns_per_ms);
 }
 
 pub fn main() !void {
