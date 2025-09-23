@@ -14,4 +14,10 @@ pub fn main() !void {
     if (map.get(42)) |val| {
         std.debug.print("Value: {d}\n", .{val});
     }
+
+    // Remove installs a tombstone (affects performance)
+    _ = map.remove(7);
+
+    // Rehash cleans up tombstones and compacts the map
+    map.rehash();
 }
