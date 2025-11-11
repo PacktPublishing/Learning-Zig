@@ -1,6 +1,6 @@
 <h1 align="center">
 Learning Zig, First Edition</h1>
-<p align="center">This is the code repository for <a href ="https://www.packtpub.com/en-us/product/learning-zig-first-edition/9781835085127"> Learning Zig, First Edition</a>, published by Packt.
+<p align="center">This is the code repository for <a href ="https://www.packtpub.com/en-us/product/learning-zig-9781835085127"> Learning Zig, First Edition</a>, published by Packt.
 </p>
 
 <h2 align="center">
