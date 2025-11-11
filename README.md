@@ -21,8 +21,8 @@ Alex Rios</p>
 </p>
 <details open> 
   <summary><h2>About the book</summary>
-<a href="https://www.packtpub.com/product/unity-cookbook-fifth-edition/9781805123026">
-<img src="https://content.packt.com/B21540/cover_image_small.jpg" alt="Unity Cookbook, Fifth Edition" height="256px" align="right">
+<a href="https://www.packtpub.com/en-us/product/learning-zig-9781835085127">
+<img src="https://content.packt.com/B21540/cover_image_small.jpg" alt="Learning Zig" height="256px" align="right">
 </a>
 
 System programming has long forced developers to choose between safety and performance, but Zig changes the game with its no hidden control flow philosophy and explicit resource management. If you've struggled with memory leaks, undefined behavior, or cryptic compiler errors, Zig offers an alternative that puts you back in control.
@@ -89,7 +89,14 @@ By the end of this book, you'll be ready to build a complete application that in
 
 <details open> 
   <summary><h2>Requirements for this book</summary>
-To be filled
+<h3>Software and hardware list</h3>
+     <ol>
+
+  <li>Zig (latest stable version recommended) | Windows, macOS, or Linux</li>
+<li>Standard text editor/IDE | Windows, macOS, or Linux</li>
+<li>Git (for fetching some dependencies) | Windows, macOS, or Linux</li>
+
+</ol>
   </details>
     
 
@@ -106,9 +113,9 @@ _Alex Rios_ Alex Rios is an established Brazilian software engineer with a 15-ye
   <summary><h2>Other Related Books</h2></summary>
 <ul>
 
-  <li><a href="https://www.packtpub.com/en-us/product/system-programming-essentials-with-go-first-edition/9781801813440">System Programming Essentials with Go, First Edition</a></li>
+  <li><a href="https://www.packtpub.com/en-us/product/system-programming-essentials-with-go-9781801813440">System Programming Essentials with Go, First Edition</a></li>
 
-  <li><a href="https://www.packtpub.com/en-us/product/mastering-go-fourth-edition/9781805122647">Mastering Go, Fourth Edition</a></li>
+  <li><a href="https://www.packtpub.com/en-us/product/mastering-go-9781805122647">Mastering Go, Fourth Edition</a></li>
  
 </ul>
 
