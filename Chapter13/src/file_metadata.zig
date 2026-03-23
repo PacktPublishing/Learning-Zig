@@ -2,7 +2,7 @@ const std = @import("std");
 const fs = std.fs;
 
 pub const FileMetadata = struct {
-    md: fs.File.Metadata,
+    md: fs.File.Stat,
     path: []const u8,
     inode: u64,  // unique identifier for files (helps detect moves)
     checksum: ?[]const u8, // optional content hash
@@ -18,13 +18,12 @@ pub const FileMetadata = struct {
         const file = try fs.openFileAbsolute(abs_path, .{});
         defer file.close();
 
-        const md = try fs.File.metadata(file);
-        // Get file stat information
+        // Get file stat information (replaces the old File.Metadata API)
         const stat = try file.stat();
         // Create the metadata structure
         var metadata = FileMetadata{
             .path = abs_path,
-            .md = md,
+            .md = stat,
             .inode = stat.inode,
             .checksum = null,
             .allocator = allocator,
@@ -87,7 +86,7 @@ pub const FileMetadata = struct {
     defer metadata.deinit();
 
     // Verify metadata
-        try std.testing.expect(metadata.md.size() == test_content.len);
+        try std.testing.expect(metadata.md.size == test_content.len);
     try std.testing.expect(metadata.checksum == null);
 
     // Initialize metadata (with hash)
@@ -103,7 +102,7 @@ pub const FileMetadata = struct {
     defer cloned_metadata.deinit();
 
     try std.testing.expectEqualStrings(metadata.path, cloned_metadata.path);
-    try std.testing.expect(metadata.md.size() == cloned_metadata.md.size());
+    try std.testing.expect(metadata.md.size == cloned_metadata.md.size);
     try std.testing.expect(metadata.inode == cloned_metadata.inode);
     // _ = std.debug.print("{s}\n", .{"file-metadata tests"});
     }
@@ -132,7 +131,7 @@ fn computeFileHash(file: fs.File, allocator: std.mem.Allocator) ![]const u8 {
 
     // Convert the hash to a hexadecimal string
     const hex_hash = try allocator.alloc(u8, 64);
-    _ = try std.fmt.bufPrint(hex_hash, "{s}", .{std.fmt.fmtSliceHexLower(&hash)});
+    _ = try std.fmt.bufPrint(hex_hash, "{x}", .{hash});
 
     return hex_hash;
 }

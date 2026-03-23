@@ -7,11 +7,9 @@ pub fn main() !void {
     // Compile-time validated format string
     std.debug.print("Player {s} scored {d} points\n", .{name, score});
 
-    //Zig's Fallback Behavior:
-    // When a type doesn’t match the format specifier, Zig tries to:
-    // - Print the raw bytes of the value (ASCII codes in this case)
-    // - Issue a runtime warning (not a compile error) about mismatched types
-    std.debug.print("Score: {d}\n", .{"100"});
-
+    // In Zig 0.15+, using a mismatched format specifier (e.g., {d} for a string)
+    // is a compile error. Always use the correct specifier for the type:
+    // - {s} for strings
+    // - {d} for integers
     std.debug.print("Score: {s}\n", .{"100"}); // Output: Score: 100
 }
