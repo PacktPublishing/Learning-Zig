@@ -110,7 +110,10 @@ pub fn run() !void {
 
 /// Display help information
 fn showHelp(program_name: []const u8) !void {
-    const stdout = std.io.getStdOut().writer();
+    var buf: [4096]u8 = undefined;
+    const stdout_file: std.fs.File = .stdout();
+    var stdout_writer = stdout_file.writer(&buf);
+    const stdout = &stdout_writer.interface;
 
     try stdout.print("Usage: {s} [OPTIONS] [PATH]\n\n", .{program_name});
     try stdout.writeAll("A file monitoring system that detects and reports changes to the console.\n\n");
@@ -174,7 +177,10 @@ fn splitPatterns(allocator: std.mem.Allocator, patterns_str: []const u8) ![]cons
 
 /// Print a detected change to stdout
 fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
-    const stdout = std.io.getStdOut().writer();
+    var buf: [4096]u8 = undefined;
+    const stdout_file: std.fs.File = .stdout();
+    var stdout_writer = stdout_file.writer(&buf);
+    const stdout = &stdout_writer.interface;
     const old_path = change.old_path orelse "unknown";
     const new_path = change.new_path orelse "unknown";
 
@@ -204,8 +210,8 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
                 const new_meta = change.new_metadata.?;
 
                 // Size changes
-                const old_size = old_meta.md.size();
-                const new_size = new_meta.md.size();
+                const old_size = old_meta.md.size;
+                const new_size = new_meta.md.size;
 
                 if (old_size != new_size) {
                     const percentage = calculatePercentageChange(old_size, new_size);
@@ -217,12 +223,12 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
                 }
 
                 // Modified time changes (if tracked but not the only change)
-                if (old_meta.md.modified() != new_meta.md.modified() and
+                if (old_meta.md.mtime != new_meta.md.mtime and
                     change.change_type != .timestamp)
                 {
                     try stdout.print("  Modified time changed: {d} → {d}\n", .{
-                        old_meta.md.modified(),
-                        new_meta.md.modified(),
+                        old_meta.md.mtime,
+                        new_meta.md.mtime,
                     });
                 }
 
@@ -261,8 +267,8 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
 
             // Show permission details if available
             if (change.old_metadata != null and change.new_metadata != null) {
-                const old_mode = change.old_metadata.?.md.permissions();
-                const new_mode = change.new_metadata.?.md.permissions();
+                const old_mode = change.old_metadata.?.md.mode;
+                const new_mode = change.new_metadata.?.md.mode;
 
                 try stdout.print("  Mode changed: {any} → {any}\n", .{
                     old_mode,
@@ -280,8 +286,8 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
             // Show timestamp details
             if (change.old_metadata != null and change.new_metadata != null) {
                 try stdout.print("  Modified time: {d} → {d}\n", .{
-                    change.old_metadata.?.md.modified(),
-                    change.new_metadata.?.md.modified(),
+                    change.old_metadata.?.md.mtime,
+                    change.new_metadata.?.md.mtime,
                 });
             }
         },
@@ -409,7 +415,7 @@ fn runMonitor(
             if (!is_continuous) {
                 return err;
             }
-            std.time.sleep(interval_ns);
+            std.Thread.sleep(interval_ns);
             continue;
         };
 
@@ -458,7 +464,7 @@ fn runMonitor(
             break;
         }
         // Sleep for the interval
-        std.time.sleep(interval_ns);
+        std.Thread.sleep(interval_ns);
     }
 
     std.debug.print("Monitoring completed.\n", .{});

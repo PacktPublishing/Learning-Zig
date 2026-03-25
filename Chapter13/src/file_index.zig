@@ -62,7 +62,7 @@ pub const FileIndex = struct {
     /// - The new FileIndex is responsible for all its internal allocations
     /// - All path strings are duplicated, so both indices have independent string ownership
     /// - FileMetadata objects are cloned with duplicated path and checksum strings
-    /// - The fs.File.Metadata is copied directly (doesn't contain owned pointers)
+    /// - The fs.File.Stat is copied directly (doesn't contain owned pointers)
     ///
     /// This function maintains the relationship between paths and inodes in the cloned index.
     /// Modifying one index will not affect the other after cloning.
@@ -190,7 +190,7 @@ test "FileIndex operations" {
 
     // Retrieve by path and verify
     if (index.get(metadata.path)) |retrieved| {
-        try std.testing.expect(metadata.md.size() == retrieved.md.size());
+        try std.testing.expect(metadata.md.size == retrieved.md.size);
         try std.testing.expect(metadata.inode == retrieved.inode);
         try std.testing.expectEqualStrings(metadata.checksum.?, retrieved.checksum.?);
     } else {
@@ -274,12 +274,12 @@ test "FileIndex clone" {
     try original.addFile(metadata2);
 
     // Store original paths for later comparison
-    var originalPaths = std.ArrayList([]const u8).init(std.testing.allocator);
-    defer originalPaths.deinit();
+    var originalPaths: std.ArrayList([]const u8) = .{};
+    defer originalPaths.deinit(std.testing.allocator);
     {
         var it = original.files.keyIterator();
         while (it.next()) |key_ptr| {
-            try originalPaths.append(key_ptr.*);
+            try originalPaths.append(std.testing.allocator, key_ptr.*);
         }
     }
 
@@ -295,12 +295,12 @@ test "FileIndex clone" {
     try std.testing.expect(cloned.count() == 2);
 
     // Collect all paths from cloned index
-    var clonedPaths = std.ArrayList([]const u8).init(std.testing.allocator);
-    defer clonedPaths.deinit();
+    var clonedPaths: std.ArrayList([]const u8) = .{};
+    defer clonedPaths.deinit(std.testing.allocator);
     {
         var it = cloned.files.keyIterator();
         while (it.next()) |key_ptr| {
-            try clonedPaths.append(key_ptr.*);
+            try clonedPaths.append(std.testing.allocator, key_ptr.*);
         }
     }
 
@@ -328,7 +328,7 @@ test "FileIndex clone" {
             if (std.mem.eql(u8, orig_path, clone_path)) {
                 const clone_meta = cloned.get(clone_path).?;
 
-                try std.testing.expectEqual(orig_meta.md.size(), clone_meta.md.size());
+                try std.testing.expectEqual(orig_meta.md.size, clone_meta.md.size);
                 try std.testing.expectEqual(orig_meta.inode, clone_meta.inode);
                 try std.testing.expectEqualStrings(orig_meta.checksum.?, clone_meta.checksum.?);
                 break;

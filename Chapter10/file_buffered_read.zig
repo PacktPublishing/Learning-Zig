@@ -11,13 +11,17 @@ pub fn main() !void {
         try f.writeAll("line1\nline2\nline3\n");
     }
 
-    const file = try cwd.openFile("log.txt", .{ .read = true });
+    const file = try cwd.openFile("log.txt", .{ .mode = .read_only });
     defer file.close();
 
     var buf: [4096]u8 = undefined;
-    var reader = file.reader();
+    var reader = file.reader(&buf);
 
-    while (try reader.readUntilDelimiterOrEof(&buf, '\n')) |line| {
+    while (true) {
+        const line = reader.interface.takeDelimiterExclusive('\n') catch |err| switch (err) {
+            error.EndOfStream => break,
+            else => return err,
+        };
         std.debug.print("Line: {s}\n", .{line});
     }
 }

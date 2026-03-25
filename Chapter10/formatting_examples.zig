@@ -4,20 +4,23 @@ const builtin = @import("builtin");
 const Monster = struct {
     name: []const u8,
     hp: u32,
-    pub fn format(self: Monster, comptime _: []const u8, _: std.fmt.FormatOptions, writer: anytype) !void {
+    pub fn format(self: Monster, writer: anytype) !void {
         try writer.print("{s} (HP: {d})", .{ self.name, self.hp });
     }
 };
 
 pub fn main() !void {
-    const stdout = std.io.getStdOut().writer();
+    var stdout_buf: [4096]u8 = undefined;
+    const stdout_file: std.fs.File = .stdout();
+    var stdout_writer = stdout_file.writer(&stdout_buf);
+    const stdout = &stdout_writer.interface;
     const allocator = std.heap.page_allocator;
 
     const name = "Goku";
     const power_level: i32 = 9001;
 
-    // Using a writer with std.fmt.format
-    try std.fmt.format(stdout, "{s}'s power level is {d}.\n", .{ name, power_level });
+    // Using a writer to print formatted output
+    try stdout.print("{s}'s power level is {d}.\n", .{ name, power_level });
 
     // allocPrint to produce a formatted owned string
     const message = try std.fmt.allocPrint(allocator, "Errors: {d}", .{42});
@@ -32,6 +35,6 @@ pub fn main() !void {
 
     // Custom format method usage
     const boss = Monster{ .name = "Dragon", .hp = 1234 };
-    // Use {} to trigger the custom format method
-    std.debug.print("Boss -> {}\n", .{boss});
+    // Use {f} to trigger the custom format method (in Zig 0.15+, {} is ambiguous for structs with format methods)
+    std.debug.print("Boss -> {f}\n", .{boss});
 }

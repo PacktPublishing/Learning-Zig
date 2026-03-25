@@ -134,7 +134,7 @@ pub const ChangeJournal = struct {
     /// Initialize a new change journal
     pub fn init(allocator: std.mem.Allocator) ChangeJournal {
         return ChangeJournal{
-            .changes = std.ArrayList(FileChange).init(allocator),
+            .changes = .{},
             .allocator = allocator,
         };
     }
@@ -144,7 +144,7 @@ pub const ChangeJournal = struct {
         for (self.changes.items) |*change| {
             change.deinit();
         }
-        self.changes.deinit();
+        self.changes.deinit(self.allocator);
     }
 
     /// Record a file change in the journal
@@ -158,7 +158,7 @@ pub const ChangeJournal = struct {
     ) !void {
         const change = try FileChange.init(self.allocator, change_type, old_path, new_path, old_metadata, new_metadata);
 
-        try self.changes.append(change);
+        try self.changes.append(self.allocator, change);
     }
 
     /// Get the number of changes in the journal
@@ -277,7 +277,7 @@ fn detectFileModifications(
 
     // Check size changes
     if (config.monitor_size) {
-        if (old_metadata.md.size() != new_metadata.md.size()) {
+        if (old_metadata.md.size != new_metadata.md.size) {
             try journal.recordChange(
                 .modified,
                 path,
@@ -291,7 +291,7 @@ fn detectFileModifications(
 
     // Check permission changes
     if (config.monitor_permissions) {
-        if (!std.meta.eql(old_metadata.md.permissions(), new_metadata.md.permissions())) {
+        if (!std.meta.eql(old_metadata.md.mode, new_metadata.md.mode)) {
             try journal.recordChange(
                 .permissions,
                 path,
@@ -305,8 +305,8 @@ fn detectFileModifications(
     // Check timestamp changes
     if (config.monitor_timestamps) {
         // Focus on modification time
-        const old_mtime = old_metadata.md.modified();
-        const new_mtime = new_metadata.md.modified();
+        const old_mtime = old_metadata.md.mtime;
+        const new_mtime = new_metadata.md.mtime;
 
         if (old_mtime != new_mtime) {
             try journal.recordChange(
