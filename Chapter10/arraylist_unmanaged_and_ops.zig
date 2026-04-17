@@ -5,7 +5,7 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     // Unmanaged: you pass the allocator to each operation and to deinit
-    var unmanaged = std.ArrayListUnmanaged(u8){};
+    var unmanaged: std.ArrayListUnmanaged(u8) = .empty;
     defer unmanaged.deinit(allocator);
 
     try unmanaged.ensureTotalCapacity(allocator, 3);
@@ -24,7 +24,7 @@ pub fn main() !void {
     std.debug.print("unmanaged items: {any}\n", .{unmanaged.items});
 
     // Managed-array equivalent: use Unmanaged for Zig 0.15 compatibility
-    var list = std.ArrayListUnmanaged(u8){};
+    var list: std.ArrayListUnmanaged(u8) = .empty;
     defer list.deinit(allocator);
 
     try list.appendSlice(allocator, "hello");

@@ -1,4 +1,6 @@
 const std = @import("std");
+const Io = std.Io;
+const Dir = Io.Dir;
 const FileMetadata = @import("file_metadata.zig").FileMetadata;
 const FileIndex = @import("file_index.zig").FileIndex;
 
@@ -50,7 +52,7 @@ pub const FileChange = struct {
             .new_path = null,
             .old_metadata = null,
             .new_metadata = null,
-            .timestamp = std.time.timestamp(),
+            .timestamp = 0, // timestamp set by caller if needed
             .allocator = allocator,
         };
 
@@ -126,7 +128,7 @@ pub const DetectionConfig = struct {
 /// Journal for recording file changes
 pub const ChangeJournal = struct {
     // List of detected changes
-    changes: std.ArrayList(FileChange),
+    changes: std.ArrayList(FileChange) = .empty,
 
     // Allocator for memory management
     allocator: std.mem.Allocator,
@@ -134,7 +136,6 @@ pub const ChangeJournal = struct {
     /// Initialize a new change journal
     pub fn init(allocator: std.mem.Allocator) ChangeJournal {
         return ChangeJournal{
-            .changes = .{},
             .allocator = allocator,
         };
     }
@@ -188,7 +189,7 @@ pub fn detectChanges(
                         // File was moved/renamed
                         const new_metadata_opt = new_index.get(new_path);
                         if (new_metadata_opt) |new_metadata_ptr|
-                        try journal.recordChange(
+                            try journal.recordChange(
                             .moved,
                             path,
                             new_path,
@@ -291,7 +292,7 @@ fn detectFileModifications(
 
     // Check permission changes
     if (config.monitor_permissions) {
-        if (!std.meta.eql(old_metadata.md.mode, new_metadata.md.mode)) {
+        if (!std.meta.eql(old_metadata.md.permissions, new_metadata.md.permissions)) {
             try journal.recordChange(
                 .permissions,
                 path,
@@ -308,7 +309,7 @@ fn detectFileModifications(
         const old_mtime = old_metadata.md.mtime;
         const new_mtime = new_metadata.md.mtime;
 
-        if (old_mtime != new_mtime) {
+        if (!std.meta.eql(old_mtime, new_mtime)) {
             try journal.recordChange(
                 .timestamp,
                 path,
@@ -321,6 +322,8 @@ fn detectFileModifications(
 }
 
 test "Basic change detection" {
+    const io = std.testing.io;
+
     // Create old index
     var old_index = FileIndex.init(std.testing.allocator);
     defer old_index.deinit();
@@ -331,46 +334,46 @@ test "Basic change detection" {
 
     // Create test directory
     const test_dir = "test_changes_dir";
-    try std.fs.cwd().makeDir(test_dir);
-    defer std.fs.cwd().deleteTree(test_dir) catch {};
+    try Dir.cwd().createDir(io, test_dir, .default_dir);
+    defer Dir.cwd().deleteTree(io, test_dir) catch {};
 
     // Create a test file for the old index
     const old_file_path = try std.fs.path.join(std.testing.allocator, &[_][]const u8{ test_dir, "file.txt" });
     defer std.testing.allocator.free(old_file_path);
     {
-        const file = try std.fs.cwd().createFile(old_file_path, .{});
-        try file.writeAll("Old content");
-        file.close();
+        const file = try Dir.cwd().createFile(io, old_file_path, .{});
+        try file.writeStreamingAll(io, "Old content");
+        file.close(io);
     }
 
     // Add file to old index
-    const metadata = try FileMetadata.init(std.testing.allocator, old_file_path, true);
+    const metadata = try FileMetadata.init(std.testing.allocator, io, old_file_path, true);
     defer metadata.deinit();
     try old_index.addFile(metadata);
 
     // Modify the file for the new index
     {
-        try std.fs.cwd().deleteFile(old_file_path);
-        const file = try std.fs.cwd().createFile(old_file_path, .{});
-        try file.writeAll("New content");
-        file.close();
+        try Dir.cwd().deleteFile(io, old_file_path);
+        const file = try Dir.cwd().createFile(io, old_file_path, .{});
+        try file.writeStreamingAll(io, "New content");
+        file.close(io);
     }
 
     // Create a new file for the new index
     const new_file_path = try std.fs.path.join(std.testing.allocator, &[_][]const u8{ test_dir, "new_file.txt" });
     defer std.testing.allocator.free(new_file_path);
     {
-        const file = try std.fs.cwd().createFile(new_file_path, .{});
-        try file.writeAll("Brand new file");
-        file.close();
+        const file = try Dir.cwd().createFile(io, new_file_path, .{});
+        try file.writeStreamingAll(io, "Brand new file");
+        file.close(io);
     }
 
     // Add both files to new index
-    const metadata1 = try FileMetadata.init(std.testing.allocator, old_file_path, true);
+    const metadata1 = try FileMetadata.init(std.testing.allocator, io, old_file_path, true);
     try new_index.addFile(metadata1);
     defer metadata1.deinit();
 
-    const metadata2 = try FileMetadata.init(std.testing.allocator, new_file_path, true);
+    const metadata2 = try FileMetadata.init(std.testing.allocator, io, new_file_path, true);
     try new_index.addFile(metadata2);
     defer metadata2.deinit();
 

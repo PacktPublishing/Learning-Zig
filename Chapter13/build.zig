@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
         .name = "fg",
         .root_module = exe_mod,
     });
-    exe.linkLibC();
+    exe_mod.link_libc = true;
     // Make the args module available to both the executable and tests by attaching it to exe_mod
     exe_mod.addImport("args", b.dependency("args", .{
         .target = target,
@@ -38,7 +38,8 @@ pub fn build(b: *std.Build) void {
     const exe_unit_tests = b.addTest(.{
         .root_module = exe_mod,
     });
-    exe_unit_tests.linkLibC();
+    // linkLibC is now set on the module, not on Compile
+    // exe_mod already has link_libc = true, so tests using it inherit it
 
     const run_exe_unit_tests = b.addRunArtifact(exe_unit_tests);
 

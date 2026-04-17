@@ -1,5 +1,7 @@
 // cli.zig - Minimalist version focusing only on monitoring with console output
 const std = @import("std");
+const Io = std.Io;
+const Dir = Io.Dir;
 const argsParser = @import("args");
 const FileMetadata = @import("file_metadata.zig").FileMetadata;
 const FileIndex = @import("file_index.zig").FileIndex;
@@ -77,17 +79,23 @@ pub const CliOptions = struct {
 var should_exit = false;
 
 /// Process command-line arguments and run the monitoring
-pub fn run() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+pub fn run(init: std.process.Init) !void {
+    const io = init.io;
+    var gpa: std.heap.DebugAllocator(.{}) = .init;
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    // Parse command-line arguments
-    const args = try argsParser.parseForCurrentProcess(
+    // Parse command-line arguments using the process args from Init
+    var raw_args = std.process.Args.Iterator.init(init.minimal.args);
+    // Skip the executable name
+    const exe_name = raw_args.next();
+    var args = try argsParser.parse(
         CliOptions,
+        &raw_args,
         allocator,
         .print,
     );
+    args.executable_name = if (exe_name) |n| try allocator.dupeZ(u8, n) else null;
     defer args.deinit();
 
     // Show help if requested
@@ -105,41 +113,36 @@ pub fn run() !void {
     }
 
     // Run the monitoring
-    try runMonitor(allocator, path, args.options);
+    try runMonitor(allocator, io, path, args.options);
 }
 
 /// Display help information
 fn showHelp(program_name: []const u8) !void {
-    var buf: [4096]u8 = undefined;
-    const stdout_file: std.fs.File = .stdout();
-    var stdout_writer = stdout_file.writer(&buf);
-    const stdout = &stdout_writer.interface;
+    std.debug.print("Usage: {s} [OPTIONS] [PATH]\n\n", .{program_name});
+    std.debug.print("A file monitoring system that detects and reports changes to the console.\n\n", .{});
+    std.debug.print("If PATH is not specified, the current directory will be monitored.\n\n", .{});
 
-    try stdout.print("Usage: {s} [OPTIONS] [PATH]\n\n", .{program_name});
-    try stdout.writeAll("A file monitoring system that detects and reports changes to the console.\n\n");
-    try stdout.writeAll("If PATH is not specified, the current directory will be monitored.\n\n");
+    std.debug.print("Options:\n", .{});
+    std.debug.print("  -h, --help               Show this help message\n", .{});
+    std.debug.print("  -v, --verbose            Enable verbose output\n\n", .{});
 
-    try stdout.writeAll("Options:\n");
-    try stdout.writeAll("  -h, --help               Show this help message\n");
-    try stdout.writeAll("  -v, --verbose            Enable verbose output\n\n");
+    std.debug.print("File Selection:\n", .{});
+    std.debug.print("  -i, --include-patterns=PATTERNS  Comma-separated glob patterns for files to include (default: *)\n", .{});
+    std.debug.print("  -x, --exclude-patterns=PATTERNS  Comma-separated glob patterns for files to exclude\n", .{});
+    std.debug.print("  -d, --max-depth=DEPTH           Maximum directory traversal depth\n", .{});
+    std.debug.print("  -s, --follow-symlinks           Follow symbolic links\n\n", .{});
 
-    try stdout.writeAll("File Selection:\n");
-    try stdout.writeAll("  -i, --include-patterns=PATTERNS  Comma-separated glob patterns for files to include (default: *)\n");
-    try stdout.writeAll("  -x, --exclude-patterns=PATTERNS  Comma-separated glob patterns for files to exclude\n");
-    try stdout.writeAll("  -d, --max-depth=DEPTH           Maximum directory traversal depth\n");
-    try stdout.writeAll("  -s, --follow-symlinks           Follow symbolic links\n\n");
+    std.debug.print("Change Detection:\n", .{});
+    std.debug.print("  -c, --hash-content             Enable content hashing\n", .{});
+    std.debug.print("  -t, --monitor-timestamps       Monitor timestamp changes (default: true)\n", .{});
+    std.debug.print("  -z, --monitor-size             Monitor size changes (default: true)\n", .{});
+    std.debug.print("  -C, --monitor-content          Monitor content changes\n", .{});
+    std.debug.print("  -p, --monitor-permissions      Monitor permission changes\n", .{});
+    std.debug.print("  -m, --detect-moves             Detect moved files (default: true)\n\n", .{});
 
-    try stdout.writeAll("Change Detection:\n");
-    try stdout.writeAll("  -c, --hash-content             Enable content hashing\n");
-    try stdout.writeAll("  -t, --monitor-timestamps       Monitor timestamp changes (default: true)\n");
-    try stdout.writeAll("  -z, --monitor-size             Monitor size changes (default: true)\n");
-    try stdout.writeAll("  -C, --monitor-content          Monitor content changes\n");
-    try stdout.writeAll("  -p, --monitor-permissions      Monitor permission changes\n");
-    try stdout.writeAll("  -m, --detect-moves             Detect moved files (default: true)\n\n");
-
-    try stdout.writeAll("Monitoring:\n");
-    try stdout.writeAll("  -w, --continuous         Monitor continuously\n");
-    try stdout.writeAll("  -n, --interval=SECONDS   Interval in seconds (default: 60)\n");
+    std.debug.print("Monitoring:\n", .{});
+    std.debug.print("  -w, --continuous         Monitor continuously\n", .{});
+    std.debug.print("  -n, --interval=SECONDS   Interval in seconds (default: 60)\n", .{});
 }
 
 /// Split a comma-separated string into an array of strings
@@ -157,17 +160,17 @@ fn splitPatterns(allocator: std.mem.Allocator, patterns_str: []const u8) ![]cons
     var i: usize = 0;
     errdefer {
         // If we encounter an error, free everything allocated so far that was actually allocated
-        for (patterns[0..i]) |pattern| {
-            allocator.free(pattern);
+        for (patterns[0..i]) |pat| {
+            allocator.free(pat);
         }
         allocator.free(patterns);
     }
 
     // Split the string and fill the array
     var iter = std.mem.splitScalar(u8, patterns_str, ',');
-    while (iter.next()) |pattern| {
+    while (iter.next()) |pat| {
         // Trim whitespace
-        const trimmed = std.mem.trim(u8, pattern, &[_]u8{ ' ', '\t' });
+        const trimmed = std.mem.trim(u8, pat, &[_]u8{ ' ', '\t' });
         patterns[i] = try allocator.dupe(u8, trimmed);
         i += 1;
     }
@@ -175,31 +178,27 @@ fn splitPatterns(allocator: std.mem.Allocator, patterns_str: []const u8) ![]cons
     return patterns;
 }
 
-/// Print a detected change to stdout
+/// Print a detected change to stderr via std.debug.print
 fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
-    var buf: [4096]u8 = undefined;
-    const stdout_file: std.fs.File = .stdout();
-    var stdout_writer = stdout_file.writer(&buf);
-    const stdout = &stdout_writer.interface;
     const old_path = change.old_path orelse "unknown";
     const new_path = change.new_path orelse "unknown";
 
     switch (change.change_type) {
         .created => {
-            try stdout.print("[{d}] CREATED: {s}\n", .{
+            std.debug.print("[{d}] CREATED: {s}\n", .{
                 change.timestamp,
                 new_path,
             });
         },
         .deleted => {
-            try stdout.print("[{d}] DELETED: {s}\n", .{
+            std.debug.print("[{d}] DELETED: {s}\n", .{
                 change.timestamp,
                 old_path,
             });
         },
         .modified => {
             const display_path = if (change.new_path != null) new_path else old_path;
-            try stdout.print("[{d}] MODIFIED: {s}\n", .{
+            std.debug.print("[{d}] MODIFIED: {s}\n", .{
                 change.timestamp,
                 display_path,
             });
@@ -215,7 +214,7 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
 
                 if (old_size != new_size) {
                     const percentage = calculatePercentageChange(old_size, new_size);
-                    try stdout.print("  Size changed: {d} → {d} bytes ({d})\t", .{
+                    std.debug.print("  Size changed: {d} -> {d} bytes ({d})\t", .{
                         old_size,
                         new_size,
                         percentage,
@@ -223,12 +222,12 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
                 }
 
                 // Modified time changes (if tracked but not the only change)
-                if (old_meta.md.mtime != new_meta.md.mtime and
+                if (!std.meta.eql(old_meta.md.mtime, new_meta.md.mtime) and
                     change.change_type != .timestamp)
                 {
-                    try stdout.print("  Modified time changed: {d} → {d}\n", .{
-                        old_meta.md.mtime,
-                        new_meta.md.mtime,
+                    std.debug.print("  Modified time changed: {d} -> {d}\n", .{
+                        old_meta.md.mtime.toSeconds(),
+                        new_meta.md.mtime.toSeconds(),
                     });
                 }
 
@@ -243,7 +242,7 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
                         const new_hash_str = try std.fmt.allocPrint(allocator, "{s}", .{new_hash});
                         defer allocator.free(new_hash_str);
 
-                        try stdout.print("  Content hash changed: {s} → {s}\n", .{
+                        std.debug.print("  Content hash changed: {s} -> {s}\n", .{
                             old_hash_str[0..8], // Display first 8 chars of hash for brevity
                             new_hash_str[0..8],
                         });
@@ -252,7 +251,7 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
             }
         },
         .moved => {
-            try stdout.print("[{d}] MOVED: {s} → {s}\n", .{
+            std.debug.print("[{d}] MOVED: {s} -> {s}\n", .{
                 change.timestamp,
                 old_path,
                 new_path,
@@ -260,17 +259,17 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
         },
         .permissions => {
             const display_path = if (change.new_path != null) new_path else old_path;
-            try stdout.print("[{d}] PERMISSIONS CHANGED: {s}\n", .{
+            std.debug.print("[{d}] PERMISSIONS CHANGED: {s}\n", .{
                 change.timestamp,
                 display_path,
             });
 
             // Show permission details if available
             if (change.old_metadata != null and change.new_metadata != null) {
-                const old_mode = change.old_metadata.?.md.mode;
-                const new_mode = change.new_metadata.?.md.mode;
+                const old_mode = change.old_metadata.?.md.permissions;
+                const new_mode = change.new_metadata.?.md.permissions;
 
-                try stdout.print("  Mode changed: {any} → {any}\n", .{
+                std.debug.print("  Mode changed: {any} -> {any}\n", .{
                     old_mode,
                     new_mode,
                 });
@@ -278,16 +277,16 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
         },
         .timestamp => {
             const display_path = if (change.new_path != null) new_path else old_path;
-            try stdout.print("[{d}] TIMESTAMP CHANGED: {s}\n", .{
+            std.debug.print("[{d}] TIMESTAMP CHANGED: {s}\n", .{
                 change.timestamp,
                 display_path,
             });
 
             // Show timestamp details
             if (change.old_metadata != null and change.new_metadata != null) {
-                try stdout.print("  Modified time: {d} → {d}\n", .{
-                    change.old_metadata.?.md.mtime,
-                    change.new_metadata.?.md.mtime,
+                std.debug.print("  Modified time: {d} -> {d}\n", .{
+                    change.old_metadata.?.md.mtime.toSeconds(),
+                    change.new_metadata.?.md.mtime.toSeconds(),
                 });
             }
         },
@@ -307,8 +306,8 @@ fn calculatePercentageChange(old_value: u64, new_value: u64) f64 {
 }
 
 /// Check if a path exists and is accessible
-fn validatePath(path: []const u8) !void {
-    var dir = std.fs.cwd().openDir(path, .{}) catch |err| {
+fn validatePath(io: Io, path: []const u8) !void {
+    var dir = Dir.cwd().openDir(io, path, .{}) catch |err| {
         switch (err) {
             error.FileNotFound => {
                 std.debug.print("Error: Path '{s}' does not exist\n", .{path});
@@ -324,39 +323,40 @@ fn validatePath(path: []const u8) !void {
             },
         }
     };
-    dir.close();
+    dir.close(io);
 }
 
 /// Run the monitor
 fn runMonitor(
     allocator: std.mem.Allocator,
+    io: Io,
     path: []const u8,
     options: CliOptions,
 ) !void {
     // First validate the path
-    try validatePath(path);
+    try validatePath(io, path);
 
     if (options.verbose) {
         std.debug.print("Monitoring {s} for changes\n", .{path});
     }
 
     // Resolve the real path
-    const real_path = try std.fs.realpathAlloc(allocator, path);
+    const real_path = try Dir.cwd().realPathFileAlloc(io, path, allocator);
     defer allocator.free(real_path);
 
     // Split the pattern strings into arrays
     const include_patterns = try splitPatterns(allocator, options.@"include-patterns");
     defer {
-        for (include_patterns) |pattern| {
-            allocator.free(pattern);
+        for (include_patterns) |pat| {
+            allocator.free(pat);
         }
         allocator.free(include_patterns);
     }
 
     const exclude_patterns = try splitPatterns(allocator, options.@"exclude-patterns");
     defer {
-        for (exclude_patterns) |pattern| {
-            allocator.free(pattern);
+        for (exclude_patterns) |pat| {
+            allocator.free(pat);
         }
         allocator.free(exclude_patterns);
     }
@@ -385,7 +385,7 @@ fn runMonitor(
     defer baseline_index.deinit();
 
     // Traverse directory for baseline
-    try traverseDirectory(&baseline_index, real_path, &traverse_config);
+    try traverseDirectory(&baseline_index, io, real_path, &traverse_config);
 
     if (options.verbose) {
         std.debug.print("Baseline index created with {d} files\n", .{baseline_index.count()});
@@ -393,7 +393,7 @@ fn runMonitor(
 
     // Determine if we're doing continuous monitoring or a single check
     const is_continuous = options.continuous;
-    const interval_ns = options.interval * std.time.ns_per_s;
+    const interval_ns: i96 = @as(i96, @intCast(options.interval)) * std.time.ns_per_s;
     var last_change_time: i64 = 0;
 
     std.debug.print("Monitoring started. ", .{});
@@ -409,13 +409,13 @@ fn runMonitor(
         defer current_index.deinit();
 
         // Traverse directory
-        traverseDirectory(&current_index, real_path, &traverse_config) catch |err| {
+        traverseDirectory(&current_index, io, real_path, &traverse_config) catch |err| {
             std.debug.print("Error during directory traversal: {}\n", .{err});
             std.debug.print("Will retry on next cycle\n", .{});
             if (!is_continuous) {
                 return err;
             }
-            std.Thread.sleep(interval_ns);
+            io.sleep(.{ .nanoseconds = interval_ns }, .real) catch {};
             continue;
         };
 
@@ -432,7 +432,7 @@ fn runMonitor(
 
         // If changes were detected
         if (change_journal.count() > 0) {
-            const timestamp = std.time.timestamp();
+            const timestamp = Io.Timestamp.now(io, .real).toSeconds();
 
             std.debug.print("\n=== Changes detected at {d} ({d} changes) ===\n\n", .{
                 timestamp,
@@ -455,7 +455,7 @@ fn runMonitor(
             baseline_index = new_baseline;
         } else {
             if (options.verbose) {
-                std.debug.print("No changes detected at {}\n", .{std.time.timestamp()});
+                std.debug.print("No changes detected at {}\n", .{Io.Timestamp.now(io, .real).toSeconds()});
             }
         }
 
@@ -464,7 +464,7 @@ fn runMonitor(
             break;
         }
         // Sleep for the interval
-        std.Thread.sleep(interval_ns);
+        io.sleep(.{ .nanoseconds = interval_ns }, .real) catch {};
     }
 
     std.debug.print("Monitoring completed.\n", .{});

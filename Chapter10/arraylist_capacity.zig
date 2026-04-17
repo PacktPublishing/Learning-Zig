@@ -3,7 +3,7 @@ const std = @import("std");
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    var list = std.ArrayListUnmanaged(u8){};
+    var list: std.ArrayListUnmanaged(u8) = .empty;
     defer list.deinit(allocator);
 
     // Reserve exactly some capacity up front (precise)
