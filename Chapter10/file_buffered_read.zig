@@ -1,27 +1,24 @@
 const std = @import("std");
 
-// Demonstrates buffered line-by-line reading using a stack buffer.
-pub fn main() !void {
-    const cwd = std.fs.cwd();
+// Demonstrates buffered line-by-line reading.
+pub fn main(init: std.process.Init) !void {
+    const io = init.io;
+    const cwd = std.Io.Dir.cwd();
 
     // Prepare a file with multiple lines
     {
-        const f = try cwd.createFile("log.txt", .{});
-        defer f.close();
-        try f.writeAll("line1\nline2\nline3\n");
+        const f = try cwd.createFile(io, "log.txt", .{});
+        defer f.close(io);
+        try f.writeStreamingAll(io, "line1\nline2\nline3\n");
     }
 
-    const file = try cwd.openFile("log.txt", .{ .mode = .read_only });
-    defer file.close();
+    const file = try cwd.openFile(io, "log.txt", .{});
+    defer file.close(io);
 
     var buf: [4096]u8 = undefined;
-    var reader = file.reader(&buf);
+    var reader = file.reader(io, &buf);
 
-    while (true) {
-        const line = reader.interface.takeDelimiterExclusive('\n') catch |err| switch (err) {
-            error.EndOfStream => break,
-            else => return err,
-        };
+    while (try reader.interface.takeDelimiter('\n')) |line| {
         std.debug.print("Line: {s}\n", .{line});
     }
 }

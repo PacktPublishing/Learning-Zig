@@ -1,11 +1,11 @@
 const std = @import("std");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{
+    var gpa: std.heap.DebugAllocator(.{
         .safety = true,
         .enable_memory_limit = true,
         .retain_metadata = true,
-    }){};
+    }) = .init;
 
     defer _ = gpa.deinit();
 

@@ -24,7 +24,7 @@ fn allocateResource(allocator: std.mem.Allocator) (std.mem.Allocator.Error || Op
 }
 
 pub fn main() !void {
-    var gpa_state = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa_state: std.heap.DebugAllocator(.{}) = .init;
     defer {
         const check = gpa_state.deinit();
         if (check == .leak) std.debug.print("warning: memory leaked\n", .{});

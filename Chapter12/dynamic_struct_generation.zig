@@ -1,32 +1,23 @@
 const std = @import("std");
 
-// 1. Dynamic Struct Generation (Pages 15-16)
-fn generateStruct(comptime field_names: []const []const u8, comptime field_types: []const type) type {
-    var fields: [field_names.len]std.builtin.Type.StructField = undefined;
-
-    for (field_names, 0..) |name, i| {
-        fields[i] = .{
-            .name = name[0..:0],
-            .type = field_types[i],
-            .default_value_ptr = null,
-            .is_comptime = false,
-            .alignment = @alignOf(field_types[i]),
-        };
+// 1. Dynamic Struct Generation
+// In Zig 0.16, @Type is replaced by dedicated builtins: @Struct, @Int, @Enum, etc.
+fn generateStruct(
+    comptime field_names: anytype,
+    comptime field_types: anytype,
+) type {
+    const n = field_names.len;
+    var attrs: [n]std.builtin.Type.StructField.Attributes = undefined;
+    for (&attrs) |*a| {
+        a.* = .{};
     }
 
-    return @Type(.{
-        .@"struct" = .{
-            .layout = .auto,
-            .fields = &fields,
-            .decls = &.{},
-            .is_tuple = false,
-        },
-    });
+    return @Struct(.auto, null, field_names, field_types, &attrs);
 }
 
 // Usage example from the chapter
 const MyStruct = generateStruct(
-    &[_][]const u8{ "id", "name", "score" },
+    &[_][:0]const u8{ "id", "name", "score" },
     &[_]type{ i32, []const u8, f32 },
 );
 

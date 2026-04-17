@@ -1,4 +1,6 @@
 const std = @import("std");
+const Io = std.Io;
+const Dir = Io.Dir;
 const FileMetadata = @import("file_metadata.zig").FileMetadata;
 
 pub const FileIndex = struct {
@@ -62,7 +64,7 @@ pub const FileIndex = struct {
     /// - The new FileIndex is responsible for all its internal allocations
     /// - All path strings are duplicated, so both indices have independent string ownership
     /// - FileMetadata objects are cloned with duplicated path and checksum strings
-    /// - The fs.File.Stat is copied directly (doesn't contain owned pointers)
+    /// - The File.Stat is copied directly (doesn't contain owned pointers)
     ///
     /// This function maintains the relationship between paths and inodes in the cloned index.
     /// Modifying one index will not affect the other after cloning.
@@ -86,9 +88,9 @@ pub const FileIndex = struct {
             // to avoid double allocation of strings
             const metadata_clone = FileMetadata{
                 .allocator = cloned.allocator,
-                .path = try cloned.allocator.dupe(u8, original_metadata.path),
+                .path = try cloned.allocator.dupeZ(u8, original_metadata.path),
                 .inode = original_metadata.inode,
-                .md = original_metadata.md, // File.Metadata is a simple struct that can be copied directly
+                .md = original_metadata.md, // File.Stat is a simple struct that can be copied directly
                 .checksum = if (original_metadata.checksum) |cs|
                     try cloned.allocator.dupe(u8, cs)
                 else
@@ -99,7 +101,6 @@ pub const FileIndex = struct {
                     cloned.allocator.free(cs);
                 }
                 cloned.allocator.free(metadata_clone.path);
-                // No need to deinit metadata_clone.md as it's a simple struct copy
             }
 
             // Duplicate the path to avoid reference problems and for the index key
@@ -158,25 +159,27 @@ pub const FileIndex = struct {
 
 // Tests for FileIndex
 test "FileIndex operations" {
+    const io = std.testing.io;
+
     // Create a test file
     const test_filename = "test_index_file.txt";
     const test_content = "Hello, FileGuard!";
-    const file_path = try createTempFile(std.testing.allocator, test_filename, test_content);
-    defer deleteTempFile(std.testing.allocator, file_path);
+    const file_path = try createTempFile(io, std.testing.allocator, test_filename, test_content);
+    defer deleteTempFile(io, std.testing.allocator, file_path);
 
     const test_filename2 = "test_index_file2.txt";
     const test_content2 = "Hello, FileGuard2!";
-    const file_path2 = try createTempFile(std.testing.allocator, test_filename2, test_content2);
-    defer deleteTempFile(std.testing.allocator, file_path2);
+    const file_path2 = try createTempFile(io, std.testing.allocator, test_filename2, test_content2);
+    defer deleteTempFile(io, std.testing.allocator, file_path2);
 
     // Initialize file index
     var index = FileIndex.init(std.testing.allocator);
     defer index.deinit();
 
     // Get files metadata
-    var metadata = try FileMetadata.init(std.testing.allocator, file_path, true);
+    var metadata = try FileMetadata.init(std.testing.allocator, io, file_path, true);
     defer metadata.deinit();
-    var metadata2 = try FileMetadata.init(std.testing.allocator, file_path2, true);
+    var metadata2 = try FileMetadata.init(std.testing.allocator, io, file_path2, true);
     defer metadata2.deinit();
 
     // Add to index
@@ -207,35 +210,37 @@ test "FileIndex operations" {
 
 // Helper function to create a temporary file with content
 // It returns the file path. Otherwise the error.
-fn createTempFile(allocator: std.mem.Allocator, name: []const u8, content: []const u8) ![]const u8 {
+fn createTempFile(io: Io, allocator: std.mem.Allocator, name: []const u8, content: []const u8) ![]const u8 {
     const path = try std.fs.path.join(allocator, &[_][]const u8{ "tmp", name });
     errdefer allocator.free(path);
 
     // Create directory if it doesn't exist
-    try std.fs.cwd().makePath("tmp");
+    try Dir.cwd().createDirPath(io, "tmp");
 
-    const file = try std.fs.cwd().createFile(path, .{});
-    try file.writeAll(content);
-    file.close();
+    const file = try Dir.cwd().createFile(io, path, .{});
+    try file.writeStreamingAll(io, content);
+    file.close(io);
 
     return path;
 }
 
 // Helper function to delete a temporary file
-fn deleteTempFile(allocator: std.mem.Allocator, path: []const u8) void {
-    std.fs.cwd().deleteFile(path) catch {};
+fn deleteTempFile(io: Io, allocator: std.mem.Allocator, path: []const u8) void {
+    Dir.cwd().deleteFile(io, path) catch {};
     allocator.free(path);
 }
 
 // Helper function to delete a temporary file
-fn deleteTempDir(allocator: std.mem.Allocator, path: []const u8) void {
+fn deleteTempDir(io: Io, allocator: std.mem.Allocator, path: []const u8) void {
     // Delete the directory first, then free the path buffer
-    std.fs.cwd().deleteDir(path) catch {};
+    Dir.cwd().deleteTree(io, path) catch {};
     allocator.free(path);
 }
 
 // Test the FileIndex clone method
 test "FileIndex clone" {
+    const io = std.testing.io;
+
     // Initialize random for this test
     var prng = std.Random.DefaultPrng.init(0);
     const random = prng.random();
@@ -253,28 +258,28 @@ test "FileIndex clone" {
     const test_content1 = "Hello, FileGuard Clone!";
     const test_content2 = "Hello, FileGuard Clone 2!";
 
-    const file_path1 = try createTempFile(std.testing.allocator, test_filename1, test_content1);
-    defer deleteTempFile(std.testing.allocator, file_path1);
+    const file_path1 = try createTempFile(io, std.testing.allocator, test_filename1, test_content1);
+    defer deleteTempFile(io, std.testing.allocator, file_path1);
 
-    const file_path2 = try createTempFile(std.testing.allocator, test_filename2, test_content2);
-    defer deleteTempFile(std.testing.allocator, file_path2);
+    const file_path2 = try createTempFile(io, std.testing.allocator, test_filename2, test_content2);
+    defer deleteTempFile(io, std.testing.allocator, file_path2);
 
     // Initialize original file index
     var original = FileIndex.init(std.testing.allocator);
     defer original.deinit();
 
     // Create and add file metadata
-    var metadata1 = try FileMetadata.init(std.testing.allocator, file_path1, true);
+    var metadata1 = try FileMetadata.init(std.testing.allocator, io, file_path1, true);
     defer metadata1.deinit();
 
-    var metadata2 = try FileMetadata.init(std.testing.allocator, file_path2, true);
+    var metadata2 = try FileMetadata.init(std.testing.allocator, io, file_path2, true);
     defer metadata2.deinit();
 
     try original.addFile(metadata1);
     try original.addFile(metadata2);
 
     // Store original paths for later comparison
-    var originalPaths: std.ArrayList([]const u8) = .{};
+    var originalPaths: std.ArrayList([]const u8) = .empty;
     defer originalPaths.deinit(std.testing.allocator);
     {
         var it = original.files.keyIterator();
@@ -295,7 +300,7 @@ test "FileIndex clone" {
     try std.testing.expect(cloned.count() == 2);
 
     // Collect all paths from cloned index
-    var clonedPaths: std.ArrayList([]const u8) = .{};
+    var clonedPaths: std.ArrayList([]const u8) = .empty;
     defer clonedPaths.deinit(std.testing.allocator);
     {
         var it = cloned.files.keyIterator();

@@ -1,5 +1,7 @@
 /.zig-cache
-*/*.zig-cache
+**/.zig-cache
+**/zig-out
+**/zig-pkg
 
 # IDE metadata
 .idea

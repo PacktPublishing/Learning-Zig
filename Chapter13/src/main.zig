@@ -13,9 +13,9 @@ pub const ChangeJournal = @import("change_detection.zig").ChangeJournal;
 pub const detectChanges = @import("change_detection.zig").detectChanges;
 pub const cli = @import("cli.zig");
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     // Run the CLI
-    try cli.run();
+    try cli.run(init);
 }
 
 test {

@@ -17,19 +17,20 @@ fn calculateDamage() u8 {
     return totalDamage;
 }
 
-fn cursedSword() *u8 {
-    var attackPower: u8 = 42;
-    // Attack power lives on the stack and will disappear after the function.
-    return &attackPower;
-}
-
-fn cursedScroll() []u8 {
-    var spell: [5]u8 = .{ 'F', 'i', 'r', 'e', '!' };
-    const incantation = spell[1..]; // Slice into the array.
-
-    // The array vanishes after the function, leaving `incantation` dangling.
-    return incantation;
-}
+// In Zig 0.16, the following functions would cause compile errors:
+//
+// fn cursedSword() *u8 {
+//     var attackPower: u8 = 42;
+//     return &attackPower; // error: returning address of expired local variable
+// }
+//
+// fn cursedScroll() []u8 {
+//     var spell: [5]u8 = .{ 'F', 'i', 'r', 'e', '!' };
+//     const incantation = spell[1..];
+//     return incantation; // error: returning address of expired local variable
+// }
+//
+// Zig catches dangling pointers at compile time!
 
 fn enchantedSword(allocator: std.mem.Allocator) std.mem.Allocator.Error![]u8 {
     var swordStats: [5]u8 = .{ 'S', 'l', 'a', 's', 'h' };

@@ -2,11 +2,11 @@
     .name = .zig_file_guard,
     .version = "0.0.0",
     .fingerprint = 0x3112a747329a3960, // Changing this has security and trust implications.
-    .minimum_zig_version = "0.15.0",
+    .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .args = .{
-            .url = "git+https://github.com/ikskuh/zig-args?ref=master#e060ac80c244e9675471b6d213b22ddc83cc8f98",
-            .hash = "args-0.0.0-CiLiqo_RAADz2TiHUzG5-0Mk7IZHR-h1SZgUrb_k4c7d",
+            .url = "git+https://github.com/ikskuh/zig-args?ref=master#cef615b6762990466d88db126f762f1cabe327e8",
+            .hash = "args-0.0.0-CiLiqvvfAAAM3smSSA0GGjCI483ftWnhZ_FFo4WjNELF",
         },
     },
 

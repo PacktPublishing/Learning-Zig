@@ -1,12 +1,12 @@
 const std = @import("std");
 
-fn worker(slot: usize, task_id: usize) void {
+fn worker(io: std.Io, slot: usize, task_id: usize) void {
     std.debug.print("Worker slot {d} executing task {d}\n", .{ slot, task_id });
-    // Simulate some work
-    std.Thread.sleep(10 * std.time.ns_per_ms);
+    // In Zig 0.16, sleep requires an Io instance
+    io.sleep(.fromMilliseconds(10), .awake) catch return;
 }
 
-pub fn main() !void {
+pub fn main(init: std.process.Init) !void {
     const num_workers = 5; // fixed-size pool
     const num_tasks = 10; // total tasks to execute
 
@@ -21,7 +21,7 @@ pub fn main() !void {
         var i: usize = 0;
         while (i < batch_size) : (i += 1) {
             const task_id = next_task + i;
-            threads[i] = try std.Thread.spawn(.{}, worker, .{ i, task_id });
+            threads[i] = try std.Thread.spawn(.{}, worker, .{ init.io, i, task_id });
         }
 
         // Wait for current batch to finish before scheduling the next tasks

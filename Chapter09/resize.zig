@@ -4,7 +4,7 @@ const expect = std.testing.expect;
 
 test "allocator resize functionality" {
     // Create a general-purpose allocator
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .init;
     defer {
         // Check for memory leaks
         const leak_status = gpa.deinit();

@@ -12,8 +12,9 @@ fn doSomethingThatMightFail() !void {
     // This will run only if an error occurs after this point
     errdefer std.debug.print("Cleaning up resource\n", .{});
 
-    // Simulate a potential error
-    if (std.crypto.random.boolean()) {
+    // Simulate a potential error using a PRNG
+    var prng = std.Random.DefaultPrng.init(0xdeadbeef);
+    if (prng.random().boolean()) {
         return error.Oops;
     }
 

@@ -4,7 +4,7 @@ pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
     // Use Unmanaged for compatibility across Zig versions
-    var list = std.ArrayListUnmanaged(u8){};
+    var list: std.ArrayListUnmanaged(u8) = .empty;
     defer list.deinit(allocator); // Mandatory cleanup
 
     // Append with error handling

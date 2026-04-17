@@ -2,11 +2,11 @@
 
 A fast, cross-platform file monitoring tool written in Zig. It scans a directory tree and reports file changes to the console: created, deleted, modified, moved/renamed, permissions, and timestamps. Move detection is inode-based when available.
 
-This README reflects the current state of the codebase (Zig 0.15.x, executable name: fg) and adds setup, usage, and testing details.
+This README reflects the current state of the codebase (Zig 0.16.x, executable name: fg) and adds setup, usage, and testing details.
 
 
 ## Requirements
-- Zig 0.15.1 (recommended for reproducibility)
+- Zig 0.16.0 (recommended for reproducibility)
 - Optional: mise for tool pinning
   - mise trust
   - mise install
