@@ -86,7 +86,20 @@ By the end of this book, you'll be ready to build a complete application that in
 
 </details>
 
+<details open>
+  <summary><h2>Errata & Troubleshooting Tips</summary>
+<h3>Page 91 (What is the ?T type?)</h3>
+<br>
+Let’s break down this example:
+<ul>
+<li>maybeValue is an optional i32, meaning it could hold a number or be null</li>
+<li>We explicitly check for null using the if (maybeValue) |value| capture syntax, which binds the unwrapped value to
+value only when the optional is non-null.</li>
+</ul>
 
+</details>
+
+   
 <details open> 
   <summary><h2>Requirements for this book</summary>
 <h3>Software and hardware list</h3>
