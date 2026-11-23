@@ -5,3 +5,9 @@
 
 # IDE metadata
 .idea
+
+# Files written by the Chapter10 file I/O examples
+/Chapter10/log.txt
+/Chapter10/output.txt
+/Chapter10/save.bin
+/Chapter10/secret_plans.txt
