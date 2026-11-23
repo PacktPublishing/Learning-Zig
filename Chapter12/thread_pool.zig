@@ -2,7 +2,7 @@ const std = @import("std");
 
 fn worker(io: std.Io, slot: usize, task_id: usize) void {
     std.debug.print("Worker slot {d} executing task {d}\n", .{ slot, task_id });
-    // In Zig 0.16, sleep requires an Io instance
+    // Since Zig 0.16, sleep requires an Io instance
     io.sleep(.fromMilliseconds(10), .awake) catch return;
 }
 

@@ -14,7 +14,7 @@ pub fn reverseString(allocator: std.mem.Allocator, s: []const u8) ![]u8 {
 }
 
 /// Example program that reverses each command line argument and prints it.
-/// In Zig 0.16, main accepts std.process.Init for access to args, allocator, and I/O.
+/// Since Zig 0.16, main accepts std.process.Init for access to args, allocator, and I/O.
 pub fn main(init: std.process.Init) !void {
     const allocator = init.gpa;
 
@@ -39,9 +39,7 @@ pub fn main(init: std.process.Init) !void {
 // -----------------
 
 test "reverseString reverses ascii text" {
-    var gpa: std.heap.DebugAllocator(.{}) = .init;
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = std.testing.allocator;
 
     const input = "hello";
     const out = try reverseString(allocator, input);
@@ -50,9 +48,7 @@ test "reverseString reverses ascii text" {
 }
 
 test "reverseString handles empty string" {
-    var gpa: std.heap.DebugAllocator(.{}) = .init;
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = std.testing.allocator;
 
     const input = "";
     const out = try reverseString(allocator, input);
@@ -61,9 +57,7 @@ test "reverseString handles empty string" {
 }
 
 test "reverseString works with punctuation and spaces" {
-    var gpa: std.heap.DebugAllocator(.{}) = .init;
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = std.testing.allocator;
 
     const input = "a man, a plan";
     const out = try reverseString(allocator, input);

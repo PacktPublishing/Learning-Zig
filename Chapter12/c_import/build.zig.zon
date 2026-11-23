@@ -1,0 +1,18 @@
+.{
+    .name = .c_import,
+    .version = "0.0.0",
+    .fingerprint = 0xc2578ed1a440f68b, // Changing this has security and trust implications.
+    .minimum_zig_version = "0.17.0",
+    .dependencies = .{
+        .translate_c = .{
+            .url = "git+https://codeberg.org/ziglang/translate-c?ref=2.0.2#c11030012dc325d446474d17b78c242fd1d622ec",
+            .hash = "translate_c-2.0.2-Q_BUWvBNBwBgPKQJPblip6M7AHNK_IPNPmyv4rSIQMQc",
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "c.h",
+        "main.zig",
+    },
+}

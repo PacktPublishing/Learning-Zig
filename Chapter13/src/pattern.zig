@@ -1,8 +1,6 @@
 const std = @import("std");
-const c = @cImport({
-    @cInclude("stdlib.h");
-    @cInclude("fnmatch.h");
-});
+// fnmatch(3) from libc (<fnmatch.h>); the module links libc in build.zig.
+extern "c" fn fnmatch(pattern: [*:0]const u8, string: [*:0]const u8, flags: c_int) c_int;
 
 pub fn matches(allocator: std.mem.Allocator, pattern: []const u8, name: []const u8) bool {
     // Ensure null-terminated strings for C fnmatch
@@ -15,7 +13,7 @@ pub fn matches(allocator: std.mem.Allocator, pattern: []const u8, name: []const 
     std.mem.copyForwards(u8, nameZ[0..name.len], name);
 
     // to understand what is possible for the flags: https://man7.org/linux/man-pages/man3/fnmatch.3.html
-    const rc: c_int = c.fnmatch(@ptrCast(pattZ.ptr), @ptrCast(nameZ.ptr), 0);
+    const rc: c_int = fnmatch(pattZ.ptr, nameZ.ptr, 0);
     return rc == 0;
 }
 

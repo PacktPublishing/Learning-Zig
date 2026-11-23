@@ -24,10 +24,10 @@ fn allocateResource(allocator: std.mem.Allocator) (std.mem.Allocator.Error || Op
 }
 
 pub fn main() !void {
-    var gpa_state: std.heap.DebugAllocator(.{}) = .init;
+    var gpa_state: std.heap.SafeAllocator = .init(std.heap.page_allocator, .{});
     defer {
-        const check = gpa_state.deinit();
-        if (check == .leak) std.debug.print("warning: memory leaked\n", .{});
+        const leaks = gpa_state.deinit();
+        if (leaks != 0) std.debug.print("warning: {d} allocation(s) leaked\n", .{leaks});
     }
     const allocator = gpa_state.allocator();
 

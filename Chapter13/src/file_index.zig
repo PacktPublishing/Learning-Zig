@@ -88,7 +88,7 @@ pub const FileIndex = struct {
             // to avoid double allocation of strings
             const metadata_clone = FileMetadata{
                 .allocator = cloned.allocator,
-                .path = try cloned.allocator.dupeZ(u8, original_metadata.path),
+                .path = try cloned.allocator.dupeSentinel(u8, original_metadata.path, 0),
                 .inode = original_metadata.inode,
                 .md = original_metadata.md, // File.Stat is a simple struct that can be copied directly
                 .checksum = if (original_metadata.checksum) |cs|
@@ -249,10 +249,10 @@ test "FileIndex clone" {
     const random_suffix1 = random.int(u32);
     const random_suffix2 = random.int(u32);
 
-    const test_filename1 = try std.fmt.allocPrint(std.testing.allocator, "test_clone_file1_{d}.txt", .{random_suffix1});
+    const test_filename1 = try std.testing.allocator.print("test_clone_file1_{d}.txt", .{random_suffix1});
     defer std.testing.allocator.free(test_filename1);
 
-    const test_filename2 = try std.fmt.allocPrint(std.testing.allocator, "test_clone_file2_{d}.txt", .{random_suffix2});
+    const test_filename2 = try std.testing.allocator.print("test_clone_file2_{d}.txt", .{random_suffix2});
     defer std.testing.allocator.free(test_filename2);
 
     const test_content1 = "Hello, FileGuard Clone!";

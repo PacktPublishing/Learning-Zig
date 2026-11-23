@@ -1,12 +1,14 @@
 const std = @import("std");
 
 pub fn main() !void {
-    var gpa: std.heap.DebugAllocator(.{
-        .safety = true,
-        .enable_memory_limit = true,
-        .retain_metadata = true,
-    }) = .init;
+    // SafeAllocator detects leaks, double frees, and writes after free.
+    // It wraps a backing allocator that supplies the pages.
+    var gpa: std.heap.SafeAllocator = .init(std.heap.page_allocator, .{
+        .stack_trace_frames = 8, // frames recorded per allocation for leak reports
+        .check_write_after_free = true,
+    });
 
+    // deinit returns the number of leaked allocations
     defer _ = gpa.deinit();
 
     const allocator = gpa.allocator();

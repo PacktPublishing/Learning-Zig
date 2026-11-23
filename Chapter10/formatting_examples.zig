@@ -4,7 +4,7 @@ const Monster = struct {
     name: []const u8,
     hp: u32,
 
-    // In Zig 0.16, custom format takes (self, writer) — no more comptime fmt or FormatOptions.
+    // Since Zig 0.16, custom format takes (self, writer) — no more comptime fmt or FormatOptions.
     pub fn format(self: Monster, writer: *std.Io.Writer) std.Io.Writer.Error!void {
         try writer.print("{s} (HP: {d})", .{ self.name, self.hp });
     }
@@ -19,10 +19,10 @@ pub fn main() !void {
     // std.debug.print writes directly to stderr (no Io needed)
     std.debug.print("{s}'s power level is {d}.\n", .{ name, power_level });
 
-    // allocPrint to produce a formatted owned string
-    const message = try std.fmt.allocPrint(allocator, "Errors: {d}", .{42});
+    // Allocator.print to produce a formatted owned string
+    const message = try allocator.print("Errors: {d}", .{42});
     defer allocator.free(message);
-    std.debug.print("allocPrint -> {s}\n", .{message});
+    std.debug.print("allocator.print -> {s}\n", .{message});
 
     // Alignment and numeric formatting
     std.debug.print("Health: {d:0>4}\n", .{5});

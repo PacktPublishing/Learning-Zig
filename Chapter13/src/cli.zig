@@ -81,9 +81,7 @@ var should_exit = false;
 /// Process command-line arguments and run the monitoring
 pub fn run(init: std.process.Init) !void {
     const io = init.io;
-    var gpa: std.heap.DebugAllocator(.{}) = .init;
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+    const allocator = init.gpa;
 
     // Parse command-line arguments using the process args from Init
     var raw_args = std.process.Args.Iterator.init(init.minimal.args);
@@ -95,7 +93,7 @@ pub fn run(init: std.process.Init) !void {
         allocator,
         .print,
     );
-    args.executable_name = if (exe_name) |n| try allocator.dupeZ(u8, n) else null;
+    args.executable_name = if (exe_name) |n| try allocator.dupeSentinel(u8, n, 0) else null;
     defer args.deinit();
 
     // Show help if requested
@@ -237,9 +235,9 @@ fn printChange(change: FileChange, allocator: std.mem.Allocator) !void {
                     const new_hash = new_meta.checksum.?;
 
                     if (!std.mem.eql(u8, old_hash, new_hash)) {
-                        const old_hash_str = try std.fmt.allocPrint(allocator, "{s}", .{old_hash});
+                        const old_hash_str = try allocator.print("{s}", .{old_hash});
                         defer allocator.free(old_hash_str);
-                        const new_hash_str = try std.fmt.allocPrint(allocator, "{s}", .{new_hash});
+                        const new_hash_str = try allocator.print("{s}", .{new_hash});
                         defer allocator.free(new_hash_str);
 
                         std.debug.print("  Content hash changed: {s} -> {s}\n", .{

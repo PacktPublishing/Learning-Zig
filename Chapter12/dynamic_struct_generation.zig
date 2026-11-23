@@ -1,16 +1,13 @@
 const std = @import("std");
 
 // 1. Dynamic Struct Generation
-// In Zig 0.16, @Type is replaced by dedicated builtins: @Struct, @Int, @Enum, etc.
+// @Type is replaced by dedicated builtins: @Struct, @Int, @Enum, etc.
 fn generateStruct(
     comptime field_names: anytype,
     comptime field_types: anytype,
 ) type {
     const n = field_names.len;
-    var attrs: [n]std.builtin.Type.StructField.Attributes = undefined;
-    for (&attrs) |*a| {
-        a.* = .{};
-    }
+    const attrs: [n]std.lang.Type.Struct.FieldAttributes = @splat(.{});
 
     return @Struct(.auto, null, field_names, field_types, &attrs);
 }

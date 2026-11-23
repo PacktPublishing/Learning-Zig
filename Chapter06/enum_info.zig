@@ -15,8 +15,8 @@ pub fn main() void {
     const enumInfo = info.@"enum";
     std.debug.print("Enum tag type: {s}\n", .{@typeName(enumInfo.tag_type)});
 
-    inline for (enumInfo.fields) |field| {
-        std.debug.print("Field: {s}\n", .{field.name});
+    inline for (enumInfo.field_names) |name| {
+        std.debug.print("Field: {s}\n", .{name});
     }
 }
 

@@ -48,7 +48,7 @@ pub const FileMetadata = struct {
     // Create a duplicate of this metadata
     pub fn clone(fmd: FileMetadata) !FileMetadata {
         var new_metadata = FileMetadata{
-            .path = try fmd.allocator.dupeZ(u8, fmd.path),
+            .path = try fmd.allocator.dupeSentinel(u8, fmd.path, 0),
             .md = fmd.md,
             .inode = fmd.inode,
             .checksum = null,
