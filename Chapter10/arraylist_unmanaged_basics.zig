@@ -3,8 +3,8 @@ const std = @import("std");
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
 
-    // Use Unmanaged for compatibility across Zig versions
-    var list: std.ArrayListUnmanaged(u8) = .empty;
+    // ArrayList is unmanaged: pass the allocator to each call that allocates
+    var list: std.ArrayList(u8) = .empty;
     defer list.deinit(allocator); // Mandatory cleanup
 
     // Append with error handling

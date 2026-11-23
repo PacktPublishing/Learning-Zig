@@ -9,7 +9,7 @@ fn performOperation(buf: []u8) OperationError!void {
     }
     // Pretend we write something into the buffer
     if (buf.len >= 11) {
-        std.mem.copyForwards(u8, buf[0..11], "hello world");
+        @memcpy(buf[0..11], "hello world");
     }
 }
 
