@@ -88,7 +88,8 @@ Notes:
 
 
 ## Troubleshooting
-- Ensure Zig 0.14.0 for reproducibility. If using `mise`: `mise trust && mise install`.
+- Use Zig 0.17. The repo's `mise.toml` pins 0.17.1; with `mise`, run `mise trust && mise install`.
+- On an older Zig? Every version since 0.16 has a git tag (`0.16`, `0.17`). Check out the tag that matches your compiler, e.g. `git checkout 0.16`.
 - If move detection seems missing, your filesystem may report inode 0.
 - Continuous monitoring logs traversal errors and retries next interval; in one-shot mode, errors bubble up.
 
