@@ -1,8 +1,6 @@
 const std = @import("std");
-const c = @cImport({
-    @cInclude("stdio.h");
-    @cInclude("time.h");
-});
+// Translated from c.h by the translate-c package (see build.zig)
+const c = @import("c");
 
 pub fn main() void {
     _ = c.printf("Zig says: Hello from C's %s!\n", "printf");

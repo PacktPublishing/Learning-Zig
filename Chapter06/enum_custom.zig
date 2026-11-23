@@ -8,6 +8,6 @@ const std = @import("std");
 
 pub fn main() void {
     const status = HttpStatus.NotFound;
-    const code = @intFromEnum(status);
+    const code = @backingInt(status);
     std.debug.print("HTTP Status Code: {d}\n", .{code});
 }

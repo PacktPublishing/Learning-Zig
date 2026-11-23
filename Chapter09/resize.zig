@@ -4,12 +4,12 @@ const expect = std.testing.expect;
 
 test "allocator resize functionality" {
     // Create a general-purpose allocator
-    var gpa: std.heap.DebugAllocator(.{}) = .init;
+    var gpa: std.heap.SafeAllocator = .init(std.heap.page_allocator, .{});
     defer {
-        // Check for memory leaks
-        const leak_status = gpa.deinit();
+        // Check for memory leaks: deinit returns the number of leaked allocations
+        const leaks = gpa.deinit();
         // Can't use try in defer, so we'll use this approach instead
-        if (leak_status == .leak) {
+        if (leaks != 0) {
             std.debug.print("Memory leak detected\n", .{});
             unreachable;
         }
@@ -116,9 +116,15 @@ test "allocator resize functionality" {
 }
 
 test "failing allocator with resize index" {
+    // Back it with a FixedBufferAllocator: shrinking its most recent
+    // allocation always succeeds in place, so only the FailingAllocator decides
+    // which resize fails. (General purpose allocators may refuse any resize.)
+    var backing_buffer: [128]u8 = undefined;
+    var fba = std.heap.FixedBufferAllocator.init(&backing_buffer);
+
     // Create a FailingAllocator that will fail on the 2nd resize operation
-    var failing_allocator = std.testing.FailingAllocator.init(std.testing.allocator, .{
-        .resize_fail_index = 2, // Fail on the 3rd resize operation (index 2)
+    var failing_allocator = std.testing.FailingAllocator.init(fba.allocator(), .{
+        .resize_fail_index = 1, // Fail on the 2nd resize operation (index 1)
     });
     const allocator = failing_allocator.allocator();
     
@@ -139,6 +145,6 @@ test "failing allocator with resize index" {
         buffer = buffer.ptr[0..30];
     }
     
-    // Verify that the third resize failed
+    // Verify that the second resize failed
     try expect(buffer.len == 50);
 }

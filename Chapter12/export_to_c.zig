@@ -25,15 +25,15 @@ export fn count_words(str: [*:0]const u8) callconv(.c) u32 {
 test "ch12: export count_words and call from Zig" {
     const alloc = std.testing.allocator;
 
-    const s1 = try alloc.dupeZ(u8, "Zig is awesome");
+    const s1 = try alloc.dupeSentinel(u8, "Zig is awesome", 0);
     defer alloc.free(s1);
     try std.testing.expectEqual(@as(u32, 3), count_words(s1.ptr));
 
-    const s2 = try alloc.dupeZ(u8, "  many   spaces here  ");
+    const s2 = try alloc.dupeSentinel(u8, "  many   spaces here  ", 0);
     defer alloc.free(s2);
     try std.testing.expectEqual(@as(u32, 3), count_words(s2.ptr));
 
-    const s3 = try alloc.dupeZ(u8, "");
+    const s3 = try alloc.dupeSentinel(u8, "", 0);
     defer alloc.free(s3);
     try std.testing.expectEqual(@as(u32, 0), count_words(s3.ptr));
 }

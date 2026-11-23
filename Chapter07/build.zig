@@ -11,14 +11,10 @@ pub fn build(b: *std.Build) void {
     });
     b.installArtifact(exe);
 
-    // Run step (accepts forwarded args; defaults to an example if none)
+    // Run step: forwards args given after `--`, e.g. `zig build run-reverse -- hello world`
     const run_cmd = b.addRunArtifact(exe);
-    if (b.args) |args| {
-        run_cmd.addArgs(args);
-    } else {
-        run_cmd.addArgs(&.{ "hello", "world" });
-    }
-    const run_step = b.step("run-reverse", "Run reverse_string with args (default: hello world)");
+    run_cmd.addPassthruArgs();
+    const run_step = b.step("run-reverse", "Run reverse_string with args (zig build run-reverse -- hello world)");
     run_step.dependOn(&run_cmd.step);
 
     // Unit tests for Chapter 7 files

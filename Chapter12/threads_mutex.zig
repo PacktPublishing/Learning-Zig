@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const Data = struct {
-    // In Zig 0.16, Mutex moved from std.Thread.Mutex to std.Io.Mutex
+    // Since Zig 0.16, Mutex moved from std.Thread.Mutex to std.Io.Mutex
     mutex: std.Io.Mutex = .init,
     counter: u32 = 0,
 };

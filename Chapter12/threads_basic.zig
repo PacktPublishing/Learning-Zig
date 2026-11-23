@@ -4,7 +4,7 @@ fn screamIntoTheVoid(io: std.Io, steps: u8) void {
     var i: u8 = 0;
     while (i < steps) : (i += 1) {
         std.debug.print("A", .{});
-        // In Zig 0.16, sleep requires an Io instance
+        // Since Zig 0.16, sleep requires an Io instance
         io.sleep(.fromMilliseconds(10), .awake) catch return;
     }
     std.debug.print("!\n", .{});

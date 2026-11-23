@@ -36,7 +36,7 @@ test "ch12: FixedArray and Pair type function" {
 
 // 14. @TypeOf example
 // 15. @typeInfo example
-// 17. Creating new type with @Int (replaces @Type in Zig 0.16)
+// 17. Creating new type with @Int (replaces @Type since Zig 0.16)
 
 test "ch12: type reflection with @TypeOf, @typeInfo, @Int" {
     const x: i32 = 42;
@@ -48,7 +48,7 @@ test "ch12: type reflection with @TypeOf, @typeInfo, @Int" {
     switch (info_i32) {
         .int => |int_info| {
             // Build a wider integer type based on i32 (i40)
-            // In Zig 0.16, use @Int instead of @Type(.{ .int = ... })
+            // Since Zig 0.16, use @Int instead of @Type(.{ .int = ... })
             const NewType = @Int(int_info.signedness, int_info.bits + 8);
 
             // Verify properties of the new type

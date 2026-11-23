@@ -7,7 +7,7 @@ pub fn main() !void {
     // Compile-time validated format string
     std.debug.print("Player {s} scored {d} points\n", .{ name, score });
 
-    // In Zig 0.16, mismatched format specifiers are compile errors:
+    // Since Zig 0.16, mismatched format specifiers are compile errors:
     // std.debug.print("Score: {d}\n", .{"100"});
     // error: invalid format string 'd' for type '*const [3:0]u8'
 

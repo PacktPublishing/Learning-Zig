@@ -12,6 +12,6 @@ const Day = enum {
 
 pub fn main() void {
     const today = Day.Wednesday;
-    const dayNumber: i32 = @intFromEnum(today);
+    const dayNumber: i32 = @backingInt(today);
     std.debug.print("It's day number {d} of the week.\n", .{dayNumber});
 }

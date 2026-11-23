@@ -20,15 +20,16 @@ comptime {
     assert(mem.eql(u8, hello_world, "hello world"));
 }
 
-const pattern = "ab" ** 3;
+// Array repetition uses @splat: three copies of "ab", flattened to bytes.
+const pattern: [3][2]u8 = @splat("ab".*);
 comptime {
     const std = @import("std");
     const mem = std.mem;
     const assert = std.debug.assert;
-    assert(mem.eql(u8, pattern, "ababab"));
+    assert(mem.eql(u8, mem.sliceAsBytes(&pattern), "ababab"));
 }
 
-const all_zero = [_]u16{0} ** 10;
+const all_zero: [10]u16 = @splat(0);
 
 comptime {
     const std = @import("std");

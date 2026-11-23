@@ -68,10 +68,10 @@ pub fn traverseDirectory(
             .sym_link => {
                 if (config.follow_symlinks) {
                     // Resolve the symlink using a real buffer (empty buffer is invalid)
-                    var link_buf: [std.fs.max_path_bytes]u8 = undefined;
+                    var link_buf: [std.Io.Dir.max_path_bytes]u8 = undefined;
                     const n = try dir.readLink(io, entry.name, &link_buf);
                     const target_rel = link_buf[0..n];
-                    const resolved_path = try std.fs.path.resolve(
+                    const resolved_path = try std.fs.path.resolveAlloc(
                         index.allocator,
                         &[_][]const u8{ dir_path, target_rel },
                     );

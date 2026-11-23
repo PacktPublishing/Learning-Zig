@@ -24,9 +24,9 @@ Examples:
 3) Example3_ReleaseModes
    - Showcases how different optimization modes affect safety/UB for integer overflow.
    - Try:
-     * zig build run -Doptimize=Debug (panics)
-     * zig build run -Doptimize=ReleaseSafe (panics)
-     * zig build run -Doptimize=ReleaseFast (wraps/undefined behavior)
+     * zig build run -Doptimize=debug (panics)
+     * zig build run -Doptimize=safe (panics)
+     * zig build run -Doptimize=fast (wraps/undefined behavior)
 
 4) Example4_CustomOptions
    - Passes a custom compile-time option (dark_mode) via addOptions.

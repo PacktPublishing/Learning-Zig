@@ -171,8 +171,11 @@ const std = @import("std");
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "main",
-        .root_source_file = b.path("main.zig"),
-        .target = b.host,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("main.zig"),
+            .target = b.standardTargetOptions(.{}),
+            .optimize = b.standardOptimizeOption(.{}),
+        }),
     });
     b.installArtifact(exe);
 }
@@ -209,10 +212,12 @@ CGO is a feature in Go that allows Go programs to call C code directly. It integ
 
 Building from source is a breeze in Zig, making it easy to integrate into development workflows. And when you combine this with Zig's various build modes, you have a toolset that's flexible enough to handle anything from quick debugging to production-ready releases. Zig offers several release modes that optimize your code for different scenarios:
 
-* **Debug:** Perfect for development, this mode includes extensive safety checks and skips optimizations, making it easier to catch bugs and understand your code's behavior.
-* **ReleaseSafe:** Strikes a balance between performance and reliability by optimizing your code while still retaining essential safety checks.
-* **ReleaseFast:** In situations where speed is king, this mode removes most safety checks to achieve maximum performance.
-* **ReleaseSmall:** Ideal for environments where space is limited, this mode focuses on producing the smallest possible binary size.
+* **debug:** Perfect for development, this mode includes extensive safety checks and skips optimizations, making it easier to catch bugs and understand your code's behavior.
+* **safe:** Strikes a balance between performance and reliability by optimizing your code while still retaining essential safety checks.
+* **fast:** In situations where speed is king, this mode removes most safety checks to achieve maximum performance.
+* **small:** Ideal for environments where space is limited, this mode focuses on producing the smallest possible binary size.
+
+Pick one with `zig build -Doptimize=<mode>`. Before Zig 0.17, these modes were named `Debug`, `ReleaseSafe`, `ReleaseFast`, and `ReleaseSmall`.
 
 Each of these release modes allows you to adapt to your project's specific needs, ensuring that you're always using the right tool for the job. We'll delve deeper into each of these release modes in Chapter 11, Packing, where you'll learn how to make the most of Zig's build system.
 
