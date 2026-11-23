@@ -43,6 +43,9 @@ pub const FileIndex = struct {
 
     // Add a file to the index
     pub fn addFile(self: *FileIndex, metadata: FileMetadata) !void {
+        // Symlinks can lead to the same file more than once; keep the first entry.
+        if (self.files.contains(metadata.path)) return;
+
         const cloned = try metadata.clone();
         errdefer cloned.deinit();
 
@@ -206,6 +209,25 @@ test "FileIndex operations" {
     } else {
         return error.InodeNotFound;
     }
+}
+
+// Symlinks can lead to the same file more than once during a traversal
+test "FileIndex adding the same file twice" {
+    const io = std.testing.io;
+
+    const file_path = try createTempFile(io, std.testing.allocator, "test_index_dup.txt", "Hello, FileGuard!");
+    defer deleteTempFile(io, std.testing.allocator, file_path);
+
+    var index = FileIndex.init(std.testing.allocator);
+    defer index.deinit();
+
+    var metadata = try FileMetadata.init(std.testing.allocator, io, file_path, false);
+    defer metadata.deinit();
+
+    try index.addFile(metadata);
+    try index.addFile(metadata);
+
+    try std.testing.expect(index.count() == 1);
 }
 
 // Helper function to create a temporary file with content
