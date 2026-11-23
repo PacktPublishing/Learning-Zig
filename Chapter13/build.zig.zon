@@ -5,8 +5,8 @@
     .minimum_zig_version = "0.16.0",
     .dependencies = .{
         .args = .{
-            .url = "git+https://github.com/ikskuh/zig-args?ref=master#cef615b6762990466d88db126f762f1cabe327e8",
-            .hash = "args-0.0.0-CiLiqvvfAAAM3smSSA0GGjCI483ftWnhZ_FFo4WjNELF",
+            .url = "git+https://github.com/ikskuh/zig-args?ref=master#f96f325f664d4ee2cd56a17ad135b331ecb65d98",
+            .hash = "args-0.0.0-CiLiqmvgAADyJmrzcQTP9IOYNvTzR_KGrg3ZNNsH2Qv0",
         },
     },
 
